@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Coinz</string>
     <string name="access_token">pk.eyJ1IjoiZGV4dGVyeWFuZyIsImEiOiJjam15MGFzbXIweXVkM3FxdmlsYm9pc2JrIn0.G5AiQqXwwv135Myp_Hkixg</string>
+    <string name="map">Map</string>
+    <string name="coins">Coins</string>
+    <string name="friends">Friends</string>
+    <string name="welcome">Welcome</string>
 </resources>

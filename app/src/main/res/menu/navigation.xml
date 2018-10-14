@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_welcome"
+        android:enabled="true"
+        android:icon="@drawable/sharp_accessibility_black_18dp"
+        android:title="@string/welcome"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/navigation_map"
+        android:enabled="true"
+        android:icon="@drawable/baseline_map_black_18dp"
+        android:title="@string/map"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/navigation_coins"
+        android:enabled="true"
+        android:icon="@drawable/baseline_local_atm_black_18dp"
+        android:title="@string/coins"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/navigation_friends"
+        android:enabled="true"
+        android:icon="@drawable/baseline_group_black_18dp"
+        android:title="@string/friends"
+        app:showAsAction="ifRoom"/>
+
+</menu>
