@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dexter.informatics_large_practicaltest">
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 
     <application
         android:allowBackup="true"
@@ -13,23 +13,20 @@
         android:roundIcon="@drawable/ic_laucher2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-
-        </activity>
-        <activity android:name=".Activity_One"></activity>
-        <activity android:name=".Activity_Two"></activity>
-        <activity android:name=".Acitivity_Three"></activity>
-        <activity android:name=".Splashscreen"
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".Activity_One" />
+        <activity android:name=".Activity_Two" />
+        <activity android:name=".Acitivity_Three" />
+        <activity
+            android:name=".Splashscreen"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+        <activity android:name=".StartActivity"></activity>
     </application>
-
-
 
 </manifest>
