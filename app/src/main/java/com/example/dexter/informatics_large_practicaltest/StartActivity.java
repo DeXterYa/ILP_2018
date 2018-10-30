@@ -1,11 +1,17 @@
 package com.example.dexter.informatics_large_practicaltest;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,6 +26,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+
+import java.util.HashMap;
+
 
 public class StartActivity extends AppCompatActivity {
 
@@ -29,13 +40,18 @@ public class StartActivity extends AppCompatActivity {
     private static final String TAG = "FriendsSystem";
     FirebaseAuth mAuth;
     DatabaseReference reference;
-    private FirebaseFirestore firestore;
+//    private FirebaseFirestore firestore;
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setTitle("Register");
+//        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         username = findViewById(R.id.username);
         email = findViewById(R.id.email);
@@ -43,7 +59,23 @@ public class StartActivity extends AppCompatActivity {
         btn_register = findViewById(R.id.btn_register);
 
         mAuth = FirebaseAuth.getInstance();
-        firestore = FirebaseFirestore.getInstance();
+//        firestore = FirebaseFirestore.getInstance();
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String txt_username = username.getText().toString();
+                String txt_email = email.getText().toString();
+                String txt_password = password.getText().toString();
+
+                if(TextUtils.isEmpty(txt_username)||TextUtils.isEmpty(txt_password)||TextUtils.isEmpty(txt_email)){
+                    Toast.makeText(StartActivity.this, "Please complete all the information", Toast.LENGTH_SHORT).show();
+                } else if (txt_password.length() < 6){
+                    Toast.makeText(StartActivity.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+                } else {
+                    register(txt_username, txt_email, txt_password);
+                }
+            }
+        });
     }
 
 
@@ -57,25 +89,45 @@ public class StartActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Adding");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            CollectionReference users = firestore.collection("Users");
+                            String userid = user.getUid();
 
-                            Users_profile users_profile = new Users_profile(username, email, password);
-                            users.add(users_profile)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(StartActivity.this, "User saved", Toast.LENGTH_LONG).show();
+                            reference = FirebaseDatabase.getInstance().getReference("User").child(userid);
 
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
+                            HashMap<String, String> hashMap = new HashMap<>();
+                            hashMap.put("id", userid);
+                            hashMap.put("username", username);
+                            hashMap.put("imageURL", "default");
 
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-
-                                        }
-                                    });
+                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+                                        Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                            });
+//                            CollectionReference users = firestore.collection("Users");
+//
+//                            Users_profile users_profile = new Users_profile(username, email, password);
+//                            users.add(users_profile)
+//                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                                        @Override
+//                                        public void onSuccess(DocumentReference documentReference) {
+//                                            Toast.makeText(StartActivity.this, "User saved", Toast.LENGTH_LONG).show();
+//
+//                                        }
+//                                    })
+//                                    .addOnFailureListener(new OnFailureListener() {
+//
+//                                        @Override
+//                                        public void onFailure(@NonNull Exception e) {
+//                                            Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//
+//                                        }
+//                                    });
 
 
                         } else {

@@ -13,7 +13,7 @@
         android:roundIcon="@drawable/ic_laucher2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".Activity_One" />
         <activity android:name=".Activity_Two" />
         <activity android:name=".Acitivity_Three" />
@@ -26,7 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StartActivity"></activity>
+        <activity android:name=".StartActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".ReglogActivity"></activity>
     </application>
 
 </manifest>
