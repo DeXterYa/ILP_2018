@@ -24,22 +24,31 @@ public class LoginActivity extends AppCompatActivity {
     Button btn_login;
     FirebaseAuth mAuth;
 
-    @SuppressLint("RestrictedApi")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle("Login");
-//        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Login");
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         mAuth = FirebaseAuth.getInstance();
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         btn_login = findViewById(R.id.btn_login);
+
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
 
         btn_login.setOnClickListener(new View.OnClickListener() {

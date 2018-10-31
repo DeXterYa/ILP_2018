@@ -8,7 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class Activity_Two extends AppCompatActivity {
+
+    FirebaseUser firebaseUser3;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,7 +34,8 @@ public class Activity_Two extends AppCompatActivity {
 //                    startActivityForResult(intent1,0);
 //                    overridePendingTransition(0,0);
                     startActivity(intent1);
-                    overridePendingTransition(android.R.anim.fade_out,android.R.anim.fade_in);
+                    overridePendingTransition(0,0);
+                    finish();
                     break;
 
                 case R.id.navigation_coins:
@@ -44,12 +50,14 @@ public class Activity_Two extends AppCompatActivity {
                     intent3.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent3,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
                 case R.id.navigation_welcome:
                     Intent intent4 = new Intent(Activity_Two.this, MainActivity.class);
                     intent4.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent4,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
 
 
@@ -60,5 +68,18 @@ public class Activity_Two extends AppCompatActivity {
 
 
 
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseUser3 = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser3 == null){
+            Intent intent = new Intent(Activity_Two.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

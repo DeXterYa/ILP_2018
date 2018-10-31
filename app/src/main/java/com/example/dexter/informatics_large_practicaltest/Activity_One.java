@@ -16,6 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import android.graphics.Color;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -63,6 +66,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
+    FirebaseUser firebaseUser2;
 
 
     @Override
@@ -94,6 +98,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent2,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
 
                 case R.id.navigation_friends:
@@ -101,12 +106,14 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     intent3.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent3,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
                 case R.id.navigation_welcome:
                     Intent intent4 = new Intent(Activity_One.this, MainActivity.class);
                     intent4.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent4,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
 
 
@@ -239,6 +246,15 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStart(){
         super.onStart();
+
+        firebaseUser2 = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser2 == null){
+            Intent intent = new Intent(Activity_One.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         if (locationEngine != null) {
             locationEngine.requestLocationUpdates();
         }
@@ -249,6 +265,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
     }
+
+
 
 
     @Override

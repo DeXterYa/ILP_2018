@@ -6,14 +6,36 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class ReglogActivity extends AppCompatActivity {
 
     Button btn_login, btn_register;
+    FirebaseUser firebaseUser1;
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseUser1 = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser1 != null){
+            Intent intent = new Intent(ReglogActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reglog);
+
+
+
+
 
 
         btn_login = findViewById(R.id.btn_login);
@@ -33,4 +55,7 @@ public class ReglogActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 }

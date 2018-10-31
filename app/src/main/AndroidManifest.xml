@@ -14,9 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" />
-        <activity android:name=".Activity_One" />
-        <activity android:name=".Activity_Two" />
-        <activity android:name=".Acitivity_Three" />
+        <activity android:name=".Activity_One"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".Activity_Two"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".Acitivity_Three"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".Splashscreen"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -26,8 +29,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StartActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".StartActivity"
+            android:parentActivityName=".ReglogActivity"/>
+        <activity android:name=".LoginActivity"
+            android:parentActivityName=".ReglogActivity"/>
         <activity android:name=".ReglogActivity"></activity>
     </application>
 

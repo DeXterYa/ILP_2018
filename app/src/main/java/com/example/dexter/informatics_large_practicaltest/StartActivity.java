@@ -3,6 +3,7 @@ package com.example.dexter.informatics_large_practicaltest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -42,16 +43,18 @@ public class StartActivity extends AppCompatActivity {
     DatabaseReference reference;
 //    private FirebaseFirestore firestore;
 
-    @SuppressLint("RestrictedApi")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle("Register");
-//        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Register");
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         username = findViewById(R.id.username);
         email = findViewById(R.id.email);
@@ -76,7 +79,28 @@ public class StartActivity extends AppCompatActivity {
                 }
             }
         });
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(StartActivity.this,ReglogActivity.class));
+//                finish();
+//            }
+//        });
     }
+
+
+//    @Override
+//    public boolean onSupportNavigateUp() {
+//        onBackPressed();
+//        return true;
+//    }
 
 
     private void register (String username, String email, String password) {

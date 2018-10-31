@@ -21,14 +21,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Acitivity_Three extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private static final String TAG = "FriendsSystem";
-    private static final String COLLECTION_KEY = "Chat";
-    private static final String DOCUMENT_KEY = "Message";
-    private static final String NAME_FIELD = "Name";
-    private static final String TEXT_FIELD = "Text";
 
-    private FirebaseFirestore firestore;
-    private DocumentReference filestoreChat;
+    FirebaseUser firebaseUser4;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,6 +47,7 @@ public class Acitivity_Three extends AppCompatActivity {
                     intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent1,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
 
                 case R.id.navigation_coins:
@@ -60,6 +55,7 @@ public class Acitivity_Three extends AppCompatActivity {
                     intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent2,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
 
                 case R.id.navigation_friends:
@@ -73,6 +69,7 @@ public class Acitivity_Three extends AppCompatActivity {
                     intent4.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivityForResult(intent4,0);
                     overridePendingTransition(0,0);
+                    finish();
                     break;
 
 
@@ -80,52 +77,18 @@ public class Acitivity_Three extends AppCompatActivity {
             return false;
         });
     }
-//
-//
-//
-//
-//
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
-//    }
-//
-//
-//    private void createAccount(String email, String password) {
-//        Log.d(TAG, "createAccount:" + email);
-//        if (!validateForm()) {
-//            return;
-//        }
-//
-//        showProgressDialog();
-//
-//        // [START create_user_with_email]
-//        mAuth.createUserWithEmailAndPassword(email, password)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            // Sign in success, update UI with the signed-in user's information
-//                            Log.d(TAG, "createUserWithEmail:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
-//                            updateUI(user);
-//                        } else {
-//                            // If sign in fails, display a message to the user.
-//                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-//                            Toast.makeText(Acitivity_Three.this, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
-//                            updateUI(null);
-//                        }
-//
-//                        // [START_EXCLUDE]
-//                        hideProgressDialog();
-//                        // [END_EXCLUDE]
-//                    }
-//                });
-//        // [END create_user_with_email]
-//    }
-//
-//
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        firebaseUser4 = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser4 == null){
+            Intent intent = new Intent(Acitivity_Three.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 }
