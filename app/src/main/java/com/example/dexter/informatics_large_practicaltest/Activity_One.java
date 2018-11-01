@@ -1,6 +1,7 @@
 package com.example.dexter.informatics_large_practicaltest;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,11 +10,14 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import android.graphics.Color;
 
@@ -25,7 +29,12 @@ import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -39,9 +48,19 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+
 import java.net.URL;
 import java.util.List;
 import java.net.MalformedURLException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.gt;
@@ -58,7 +77,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
 
-public class Activity_One extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener{
+public class Activity_One extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, MapboxMap.OnMapClickListener {
     private String tag = "ActivityOne";
     private MapView mapView;
     private MapboxMap map;
@@ -67,6 +86,14 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
     FirebaseUser firebaseUser2;
+    private Button navigationButton;
+
+    private Point originPosition;
+    private Point destinationPosition;
+    private Marker destinationMarker;
+    private NavigationMapRoute navigationMapRoute;
+    private static final  String TAG = "Activity_One";
+
 
 
     @Override
@@ -77,6 +104,21 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        navigationButton = findViewById(R.id.navigation_button);
+
+        navigationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Lauch navigation UI
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                        .origin(originPosition)
+                        .destination(destinationPosition)
+                        .shouldSimulateRoute(true)
+                        .build();
+                NavigationLauncher.startNavigation(Activity_One.this, options);
+            }
+        });
 
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -131,6 +173,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             Log.d(tag, "[onMapReady] mapBox is null");
         } else {
             map = mapboxMap;
+            map.addOnMapClickListener(this);
             map.getUiSettings().setCompassEnabled(true);
             map.getUiSettings().setZoomControlsEnabled(true);
             enableLocation();
@@ -194,6 +237,67 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         LatLng latLng = new LatLng(location.getLatitude(),
                 location.getLongitude());
         map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
+
+
+    @Override
+    public void onMapClick(@NonNull LatLng point) {
+
+        if (destinationMarker != null) {
+            map.removeMarker(destinationMarker);
+        }
+        destinationMarker = map.addMarker(new MarkerOptions().position(point));
+
+        destinationPosition = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+        if (originLocation != null) {
+            originPosition = Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
+            getRoute(originPosition, destinationPosition);
+        }else {
+            Toast.makeText(Activity_One.this, "Sorry, we can't get your location.",
+                    Toast.LENGTH_LONG).show();
+        }
+
+
+        navigationButton.setEnabled(true);
+        navigationButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+
+    }
+
+    private void getRoute(Point origin, Point destination) {
+        NavigationRoute.builder()
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        if (response.body() == null) {
+                            Log.e(TAG,"No routes found, check right user and access token");
+                            return;
+                        }else if (response.body().routes().size() == 0 ) {
+                            Log.e(TAG, "No routes found");
+                            return;
+                        }
+                        DirectionsRoute currentRoute = response.body().routes().get(0);
+
+                        if(navigationMapRoute !=null){
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, map);
+                        }
+
+                        navigationMapRoute.addRoute(currentRoute);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        Log.e(TAG,"Error:" + t.getMessage());
+
+                    }
+                });
+
     }
 
 

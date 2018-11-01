@@ -8,4 +8,5 @@
     <color name="mapboxBlue">#4264fb</color>
     <color name="mapnoxGrayLight">#c6d2e1</color>
     <color name="mapboxGolden">#fbe542</color>
+    <color name="unactivate">#737371</color>
 </resources>

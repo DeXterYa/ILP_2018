@@ -62,4 +62,9 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
 
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.13.0'
+    implementation('com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.13.0') {
+        transitive = true
+    }
+
 }
