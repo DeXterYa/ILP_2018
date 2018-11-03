@@ -21,7 +21,7 @@ public class Splashscreen extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splashscreen);
-        logo = (ImageView) findViewById(R.id.logo);
+        logo = findViewById(R.id.logo);
         motto1 = findViewById((R.id.name));
         motto2 = findViewById((R.id.textmotto));
 
