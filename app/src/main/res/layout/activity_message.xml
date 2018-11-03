@@ -43,7 +43,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/bottom_send"
-        android:layout_below="@+id/bar_layout">
+        android:layout_below="@+id/bar_layout"
+        android:id="@+id/recycle_view"
+        android:transcriptMode="alwaysScroll">
 
     </android.support.v7.widget.RecyclerView>
 
