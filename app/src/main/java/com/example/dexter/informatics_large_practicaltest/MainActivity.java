@@ -140,6 +140,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, ReglogActivity.class));
                 finish();
                 return true;
+
+            case R.id.profile:
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                return true;
         }
 
         return false;

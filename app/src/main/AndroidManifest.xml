@@ -39,7 +39,8 @@
             android:name=".LoginActivity"
             android:parentActivityName=".ReglogActivity" />
         <activity android:name=".ReglogActivity" />
-        <activity android:name=".MessageActivity"></activity>
+        <activity android:name=".MessageActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>
