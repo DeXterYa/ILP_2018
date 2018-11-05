@@ -107,18 +107,25 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
         navigationButton = findViewById(R.id.navigation_button);
 
-        navigationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Lauch navigation UI
-                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                        .origin(originPosition)
-                        .destination(destinationPosition)
-                        .shouldSimulateRoute(true)
-                        .build();
-                NavigationLauncher.startNavigation(Activity_One.this, options);
-            }
-        });
+        if (originLocation != null) {
+            navigationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Lauch navigation UI
+                    NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                            .origin(originPosition)
+                            .destination(destinationPosition)
+                            .shouldSimulateRoute(true)
+                            .build();
+                    NavigationLauncher.startNavigation(Activity_One.this, options);
+                }
+            });
+        } else {
+            Toast.makeText(Activity_One.this, "Sorry, we can't get your location.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+
 
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -252,14 +259,16 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         if (originLocation != null) {
             originPosition = Point.fromLngLat(originLocation.getLongitude(), originLocation.getLatitude());
             getRoute(originPosition, destinationPosition);
+
+            navigationButton.setEnabled(true);
+            navigationButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
         }else {
             Toast.makeText(Activity_One.this, "Sorry, we can't get your location.",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
         }
 
 
-        navigationButton.setEnabled(true);
-        navigationButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+
 
     }
 
