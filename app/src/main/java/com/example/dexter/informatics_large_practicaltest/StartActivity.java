@@ -142,6 +142,7 @@ public class StartActivity extends AppCompatActivity {
                             hashMap.put("username", username);
                             hashMap.put("imageURL", "default");
                             hashMap.put("status", "offline");
+                            hashMap.put ("search", username.toLowerCase());
 
                             documentReference.set(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

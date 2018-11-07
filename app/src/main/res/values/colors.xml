@@ -9,4 +9,5 @@
     <color name="mapnoxGrayLight">#c6d2e1</color>
     <color name="mapboxGolden">#fbe542</color>
     <color name="unactivate">#737371</color>
+    <color name="colorSearch">#00695c</color>
 </resources>
