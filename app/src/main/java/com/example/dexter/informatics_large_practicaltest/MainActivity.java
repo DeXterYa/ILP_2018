@@ -28,6 +28,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -39,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseUser firebaseUser;
     DatabaseReference reference;
+    private DocumentReference documentReference;
 
 
 
@@ -56,25 +64,50 @@ public class MainActivity extends AppCompatActivity {
         profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("User").child(firebaseUser.getUid());
-        reference.addValueEventListener(new ValueEventListener() {
+
+
+        documentReference = FirebaseFirestore.getInstance().collection("User").document(firebaseUser.getUid());
+        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                username.setText(user.getUsername());
-                if (user.getImageURL().equals("default")){
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
-                } else{
-                    Glide.with(MainActivity.this).load(user.getImageURL()).into (profile_image);
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    User user = documentSnapshot.toObject(User.class);
+                    username.setText(user.getUsername());
+                    if (user.getImageURL().equals("default")){
+                        profile_image.setImageResource(R.mipmap.ic_launcher);
+                    } else{
+                        Glide.with(MainActivity.this).load(user.getImageURL()).into (profile_image);
+
+                    }
+                } else if (e != null) {
 
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
+
+
+
+
+
+//        reference = FirebaseDatabase.getInstance().getReference("User").child(firebaseUser.getUid());
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                User user = dataSnapshot.getValue(User.class);
+//                username.setText(user.getUsername());
+//                if (user.getImageURL().equals("default")){
+//                    profile_image.setImageResource(R.mipmap.ic_launcher);
+//                } else{
+//                    Glide.with(MainActivity.this).load(user.getImageURL()).into (profile_image);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         Menu menu = bottomNavigationView.getMenu();
@@ -109,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     overridePendingTransition(0,0);
                     finish();
 
+
                     break;
 
 
@@ -139,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this, ReglogActivity.class));
                 finish();
+
                 return true;
 
             case R.id.profile:

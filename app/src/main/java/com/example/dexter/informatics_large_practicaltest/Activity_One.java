@@ -107,23 +107,26 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
         navigationButton = findViewById(R.id.navigation_button);
 
-        if (originLocation != null) {
-            navigationButton.setOnClickListener(new View.OnClickListener() {
+
+        navigationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Lauch navigation UI
+                    if (originLocation != null) {
                     NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                             .origin(originPosition)
                             .destination(destinationPosition)
                             .shouldSimulateRoute(true)
                             .build();
                     NavigationLauncher.startNavigation(Activity_One.this, options);
+                    } else {
+                        Toast.makeText(Activity_One.this, "Sorry, we can't get your location.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             });
-        } else {
-            Toast.makeText(Activity_One.this, "Sorry, we can't get your location.",
-                    Toast.LENGTH_SHORT).show();
-        }
+
 
 
 

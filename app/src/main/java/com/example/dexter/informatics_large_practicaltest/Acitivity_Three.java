@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.dexter.informatics_large_practicaltest.Fragments.ChatsFragment;
 import com.example.dexter.informatics_large_practicaltest.Fragments.UserFragment;
+import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Acitivity_Three extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -144,5 +146,28 @@ public class Acitivity_Three extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return titles.get(position);
         }
+    }
+
+    private void status(String status) {
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("User").document(firebaseUser4.getUid());
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("status", status);
+        documentReference.update(map);
+
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
     }
 }

@@ -28,6 +28,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -44,6 +49,8 @@ public class ProfileActivity extends AppCompatActivity {
     TextView tip;
     DatabaseReference reference;
     FirebaseUser fuser;
+
+    DocumentReference documentReference;
 
     StorageReference storageReference;
     private static final int IMAGE_REQUEST = 1;
@@ -67,14 +74,19 @@ public class ProfileActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Profile");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("User").child(fuser.getUid());
-
-        reference.addValueEventListener(new ValueEventListener() {
+        documentReference = FirebaseFirestore.getInstance().collection("User").document(fuser.getUid());
+        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                User user = documentSnapshot.toObject(User.class);
                 username.setText(user.getUsername());
                 if (user.getImageURL().equals("default")) {
                     image_profile.setImageResource(R.mipmap.ic_launcher);
@@ -82,12 +94,31 @@ public class ProfileActivity extends AppCompatActivity {
                     Glide.with(ProfileActivity.this).load(user.getImageURL()).into(image_profile);
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
+
+
+
+
+
+//        reference = FirebaseDatabase.getInstance().getReference("User").child(fuser.getUid());
+//
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                User user = dataSnapshot.getValue(User.class);
+//                username.setText(user.getUsername());
+//                if (user.getImageURL().equals("default")) {
+//                    image_profile.setImageResource(R.mipmap.ic_launcher);
+//                } else {
+//                    Glide.with(ProfileActivity.this).load(user.getImageURL()).into(image_profile);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         image_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,10 +167,16 @@ public class ProfileActivity extends AppCompatActivity {
                         Uri downloadUri = task.getResult();
                         String mUri = downloadUri.toString();
 
-                        reference = FirebaseDatabase.getInstance().getReference("User").child(fuser.getUid());
+
+                        documentReference = FirebaseFirestore.getInstance().collection("User").document(fuser.getUid());
                         HashMap<String, Object> map = new HashMap<>();
                         map.put("imageURL", mUri);
-                        reference.updateChildren(map);
+                        documentReference.update(map);
+
+//                        reference = FirebaseDatabase.getInstance().getReference("User").child(fuser.getUid());
+//                        HashMap<String, Object> map = new HashMap<>();
+//                        map.put("imageURL", mUri);
+//                        reference.updateChildren(map);
 
                         pd.dismiss();
                     } else {

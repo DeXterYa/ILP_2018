@@ -41,6 +41,7 @@ public class StartActivity extends AppCompatActivity {
     private static final String TAG = "FriendsSystem";
     FirebaseAuth mAuth;
     DatabaseReference reference;
+    private DocumentReference documentReference;
 //    private FirebaseFirestore firestore;
 
 
@@ -117,20 +118,44 @@ public class StartActivity extends AppCompatActivity {
 
                             reference = FirebaseDatabase.getInstance().getReference("User").child(userid);
 
+//                            HashMap<String, String> hashMap = new HashMap<>();
+//                            hashMap.put("id", userid);
+//                            hashMap.put("username", username);
+//                            hashMap.put("imageURL", "default");
+//
+//                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    if (task.isSuccessful()){
+//                                        Intent intent = new Intent(StartActivity.this, MainActivity.class);
+//                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                        startActivity(intent);
+//                                        finish();
+//                                    }
+//                                }
+//                            });
+
+                            documentReference = FirebaseFirestore.getInstance().collection("User").document(userid);
+
                             HashMap<String, String> hashMap = new HashMap<>();
                             hashMap.put("id", userid);
                             hashMap.put("username", username);
                             hashMap.put("imageURL", "default");
+                            hashMap.put("status", "offline");
 
-                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            documentReference.set(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        Intent intent = new Intent(StartActivity.this, MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                        finish();
-                                    }
+                                public void onSuccess(Void aVoid) {
+                                    Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
                                 }
                             });
 //                            CollectionReference users = firestore.collection("Users");

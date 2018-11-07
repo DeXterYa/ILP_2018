@@ -1,14 +1,16 @@
 package com.example.dexter.informatics_large_practicaltest.Model;
 
-public class User {
+public class User implements Cloneable{
     private String id;
     private String username;
     private String imageURL;
+    private String status;
 
-    public User(String id, String username, String imageURL) {
+    public User(String id, String username, String imageURL, String status) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
+        this.status = status;
     }
 
     public User() {
@@ -37,5 +39,25 @@ public class User {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+
+        User u = new User();
+        u.setId(this.id);
+        u.setUsername(this.username);
+        u.setImageURL(this.imageURL);
+        u.setStatus(this.status);
+
+        return u;
     }
 }

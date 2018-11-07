@@ -5,11 +5,13 @@ public class Chat {
     private String sender;
     private String receiver;
     private String message;
+    private String time_stamp;
 
-    public Chat(String sender, String receiver, String message) {
+    public Chat(String sender, String receiver, String message, String time_stamp) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
+        this.time_stamp = time_stamp;
     }
 
     public Chat() {
@@ -37,5 +39,13 @@ public class Chat {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getTime_stamp() {
+        return time_stamp;
+    }
+
+    public void setTime_stamp(String time_stamp) {
+        this.time_stamp = time_stamp;
     }
 }

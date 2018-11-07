@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.dexter.informatics_large_practicaltest.Acitivity_Three;
 import com.example.dexter.informatics_large_practicaltest.Adapter.UserAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.example.dexter.informatics_large_practicaltest.R;
@@ -21,9 +22,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 
 public class UserFragment extends Fragment {
@@ -51,33 +61,62 @@ public class UserFragment extends Fragment {
     private void readUsers() {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("User");
 
-        reference.addValueEventListener(new ValueEventListener() {
+        CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("User");
+        collectionReference.addSnapshotListener( new EventListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    User user = snapshot.getValue(User.class);
-
-                    assert user != null;
-                    assert firebaseUser != null;
-                    if (!user.getId().equals(firebaseUser.getUid())) {
-                        mUsers.add(user);
+            public void onEvent( QuerySnapshot queryDocumentSnapshots,  FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    mUsers.clear();
+                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                        User user = d.toObject(User.class);
+                        assert user != null;
+                        assert firebaseUser != null;
+                        String try1 = user.getId();
+                        String try2 = firebaseUser.getUid();
+                        if (!try1.equals(try2)) {
+                            mUsers.add(user);
+                        }
                     }
+                    userAdapter = new UserAdapter(getContext(), mUsers, false);
+                    recyclerView.setAdapter(userAdapter);
+                }
+
 
                 }
 
-                userAdapter = new UserAdapter(getContext(),mUsers);
-                recyclerView.setAdapter(userAdapter);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
+            });
 
 
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("User");
+//
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                mUsers.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+//                    User user = snapshot.getValue(User.class);
+//
+//                    assert user != null;
+//                    assert firebaseUser != null;
+//                    if (!user.getId().equals(firebaseUser.getUid())) {
+//                        mUsers.add(user);
+//                    }
+//
+//                }
+//
+//                userAdapter = new UserAdapter(getContext(),mUsers);
+//                recyclerView.setAdapter(userAdapter);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
+
+}
 }
