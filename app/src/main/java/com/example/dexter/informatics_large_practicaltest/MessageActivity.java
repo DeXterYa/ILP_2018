@@ -70,7 +70,9 @@ public class MessageActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
+
     private int hint = 0;
+    private int is_seen = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +165,8 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        seenMessage(userid);
+
 //        reference = FirebaseDatabase.getInstance().getReference("User").child(userid);
 //        reference.addValueEventListener(new ValueEventListener() {
 //            @Override
@@ -195,11 +199,37 @@ public class MessageActivity extends AppCompatActivity {
     }
 
 
+
+    private void seenMessage(String userid) {
+        collectionReference = FirebaseFirestore.getInstance().collection("Chats");
+        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (is_seen == 0) {
+                    if (queryDocumentSnapshots != null) {
+                        for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                            Chat chat = d.toObject(Chat.class);
+                            if (chat.getReceiver().equals(fUser.getUid()) && chat.getSender().equals(userid)) {
+                                String id = d.getId();
+                                documentReference = FirebaseFirestore.getInstance().collection("Chats").document(id);
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("isseen", true);
+                                documentReference.update(map);
+
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
     private void sendMessage(String sender, String receiver, String message) {
 
         collectionReference = FirebaseFirestore.getInstance().collection("Chats");
         String time_stamp = getCurrentTimeStamp();
-        Chat chat = new Chat (sender, receiver, message, time_stamp);
+        Chat chat = new Chat (sender, receiver, message, time_stamp, false);
         collectionReference.add(chat);
 //        HashMap<String, Object> hashMap = new HashMap<>();
 //        hashMap.put("sender", sender);
@@ -230,6 +260,8 @@ public class MessageActivity extends AppCompatActivity {
             public void onEvent( QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
                 mChat.clear();
                 if (queryDocumentSnapshots != null) {
+
+                    if (!queryDocumentSnapshots.isEmpty()) {
                     hint = 1;
 
 
@@ -248,7 +280,9 @@ public class MessageActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    hint = 0;
+                        hint = 0;
+
+                    }
                 }
 
 
@@ -301,11 +335,13 @@ public class MessageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         status("online");
+        is_seen = 0;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         status("offline");
+        is_seen = 1;
     }
 }

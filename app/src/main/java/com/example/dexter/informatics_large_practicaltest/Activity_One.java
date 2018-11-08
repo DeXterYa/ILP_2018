@@ -436,13 +436,13 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
     private void initLayerIcons() {
         map.addImage("SHIL-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.green_marker)));
+                getResources().getDrawable(R.mipmap.letter_s)));
         map.addImage("DOLR-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.purple_marker)));
+                getResources().getDrawable(R.mipmap.letter_d)));
         map.addImage("QUID-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.yellow_marker)));
+                getResources().getDrawable(R.mipmap.letter_q)));
         map.addImage("PENY-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.blue_marker)));
+                getResources().getDrawable(R.mipmap.letter_p)));
 
         map.addImage("quake-triangle-icon-id", BitmapUtils.getBitmapFromDrawable(
                 getResources().getDrawable(R.drawable.mapbox_marker_icon_default)));
