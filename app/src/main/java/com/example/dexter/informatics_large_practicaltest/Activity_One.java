@@ -15,10 +15,8 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,17 +24,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import android.graphics.Color;
 
+import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.Time;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonObject;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
@@ -114,6 +118,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private Marker destinationMarker;
     private NavigationMapRoute navigationMapRoute;
     private static final  String TAG = "Activity_One";
+    private int ifDownloadIcon;
+
+    private String mapMode;
 
     private String geoJsonString;
 
@@ -121,6 +128,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
     String dataNow;
+    boolean a;
 
 
 
@@ -205,55 +213,63 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             return false;
         });
 
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+        String name = firebaseUser.getUid();
 
-        DownloadIcon downloadIcon = new DownloadIcon();
-        downloadIcon.execute();
+
+        DocumentReference documentReference = FirebaseFirestore.getInstance()
+                .collection("Icons").document(firebaseUser.getUid())
+                .collection("times").document("time");
+        documentReference.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Time time = documentSnapshot.toObject(Time.class);
+                        if (time != null) {
+                            if (!time.getTime().equals(strDate)) {
+                                DownloadIcon downloadIcon = new DownloadIcon();
+                                downloadIcon.execute();
+                            }
+                        }
+                        if(time == null) {
+                            DownloadIcon downloadIcon = new DownloadIcon();
+                            downloadIcon.execute();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                DownloadIcon downloadIcon = new DownloadIcon();
+                downloadIcon.execute();
+            }
+        });
+
+
+
 
     }
 
 
 
     private class DownloadIcon extends AsyncTask<Void,Void,Void> {
-
-        boolean ifDownloadIcon = true;
-
         String data = "";
 
         @Override
         protected Void doInBackground(Void... voids) {
 
 
+                String data = "";
 
-
-            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
-            Date now = new Date();
-            String strDate = sdfDate.format(now);
-
-            DocumentReference documentReference_start = FirebaseFirestore.getInstance().collection("Icons").document(firebaseUser.getUid())
-                    .collection("times").document("time");
-            documentReference_start.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Time time = documentSnapshot.toObject(Time.class);
-                    if (time != null) {
-                        if (time.getTime().equals(strDate)) {
-                            ifDownloadIcon = false;
-                        }
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    ifDownloadIcon = true;
-                }
-            });
-
-
-
-            if (ifDownloadIcon) {
+                SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
+                Date now = new Date();
+                String strDate = sdfDate.format(now);
+                String name = firebaseUser.getUid();
 
 
                 try {
+
                     URL url = new URL(getURL());
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     InputStream inputStream = httpURLConnection.getInputStream();
@@ -272,7 +288,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     Double PENY = (Double) jsonObject_rates.get("PENY");
 
 
-                    DocumentReference documentReference = FirebaseFirestore.getInstance().collection("Icons").document(firebaseUser.getUid())
+                    DocumentReference documentReference = FirebaseFirestore.getInstance()
+                            .collection("Icons").document(firebaseUser.getUid())
                             .collection("times").document("time");
                     HashMap<String, Object> hashMap = new HashMap<>();
                     hashMap.put("time", strDate);
@@ -289,20 +306,58 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     rates.set(hashMap_rate);
 
 
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    JSONArray features = (JSONArray) jsonObject.get("features");
 
-            }
-            return null;
+                    for (int i=0; i<features.length(); i++) {
+                        JSONObject jo = (JSONObject) features.get(i);
+
+                        // Store the properties of the coins
+                        JSONObject jsonObject_properties = (JSONObject) jo.get("properties");
+
+                        String ID = (String) jsonObject_properties.get("id");
+                        String VALUE = (String) jsonObject_properties.get("value");
+                        String CURRENCY = (String) jsonObject_properties.get("currency");
+                        String SYMBOL = (String) jsonObject_properties.get("marker-symbol");
+                        String COLOR = (String) jsonObject_properties.get("marker-color");
+
+
+                        JSONObject jsonObject_geometry = (JSONObject) jo.get("geometry");
+                        JSONArray coordinates  = (JSONArray) jsonObject_geometry.get("coordinates");
+                        Double longitude = (Double) coordinates.get(0);
+                        Double latitude = (Double) coordinates.get(1);
+
+
+
+                        DocumentReference properties = FirebaseFirestore.getInstance()
+                                .collection("Icons").document(firebaseUser.getUid())
+                                .collection("features").document("coins"+Integer.toString(i+1));
+                        HashMap<String, Object> hashMap_features = new HashMap<>();
+                        hashMap_features.put("id", ID);
+                        hashMap_features.put("value", VALUE);
+                        hashMap_features.put("currency", CURRENCY);
+                        hashMap_features.put("symbol", SYMBOL);
+                        hashMap_features.put("color", COLOR);
+                        hashMap_features.put("longitude", longitude);
+                        hashMap_features.put("latitude", latitude);
+                        properties.set(hashMap_features);
+
+        }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }return null;
+
 
         }
 
     }
+
+
+
 
 
     @Override
@@ -316,8 +371,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             map.getUiSettings().setZoomControlsEnabled(true);
             enableLocation();
 
-            initLayerIcons();
-            addClusteredGeoJsonSource();
+//            initLayerIcons();
+//            addClusteredGeoJsonSource();
 
 //            geoJsonString = getStringFromFile(Uri(getURL()), Activity_One.this);
 //
@@ -327,10 +382,37 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 //            mapboxMap.addLayer(new LineLayer("geojson", "geojson"));
 
 
+            addMarkers(mapMode);
+
+
             Toast.makeText(Activity_One.this, R.string.common_google_play_services_enable_text,
                     Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+
+
+
+    private  void addMarkers(String mode) {
+        CollectionReference mapMarkers = FirebaseFirestore.getInstance()
+                .collection("Icons").document(firebaseUser.getUid())
+                .collection("features");
+        mapMarkers.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                        Markersonmap markersonmap = d.toObject(Markersonmap.class);
+                        map.addMarker(new MarkerOptions()
+                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                        .title(markersonmap.getCurrency())
+                        .snippet(markersonmap.getValue()));
+
+                    }
+                }
+            }
+        });
     }
 
     private void enableLocation() {
