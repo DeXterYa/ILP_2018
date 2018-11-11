@@ -1,14 +1,18 @@
 package com.example.dexter.informatics_large_practicaltest.Model;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class Chat {
 
     private String sender;
     private String receiver;
     private String message;
-    private String time_stamp;
+    public Date time_stamp;
     private boolean isseen;
 
-    public Chat(String sender, String receiver, String message, String time_stamp, boolean isseen) {
+
+    public Chat(String sender, String receiver, String message, Date time_stamp, boolean isseen) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
@@ -43,11 +47,11 @@ public class Chat {
         this.message = message;
     }
 
-    public String getTime_stamp() {
+    public Date getTime_stamp() {
         return time_stamp;
     }
 
-    public void setTime_stamp(String time_stamp) {
+    public void setTime_stamp(Date time_stamp) {
         this.time_stamp = time_stamp;
     }
 

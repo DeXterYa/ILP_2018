@@ -1,10 +1,17 @@
 package com.example.dexter.informatics_large_practicaltest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.location.Location;
+import java.io.*;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -21,8 +28,16 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.graphics.Color;
 
+import com.example.dexter.informatics_large_practicaltest.Model.Time;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonObject;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -44,6 +59,7 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode;
 import com.mapbox.mapboxsdk.style.expressions.Expression;
+import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -53,7 +69,12 @@ import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.net.MalformedURLException;
 
@@ -94,6 +115,13 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private NavigationMapRoute navigationMapRoute;
     private static final  String TAG = "Activity_One";
 
+    private String geoJsonString;
+
+    FirebaseUser firebaseUser;
+
+
+    String dataNow;
+
 
 
     @Override
@@ -106,6 +134,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         mapView.getMapAsync(this);
 
         navigationButton = findViewById(R.id.navigation_button);
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
         navigationButton.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +204,104 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             }
             return false;
         });
+
+
+        DownloadIcon downloadIcon = new DownloadIcon();
+        downloadIcon.execute();
+
+    }
+
+
+
+    private class DownloadIcon extends AsyncTask<Void,Void,Void> {
+
+        boolean ifDownloadIcon = true;
+
+        String data = "";
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+
+
+
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
+            Date now = new Date();
+            String strDate = sdfDate.format(now);
+
+            DocumentReference documentReference_start = FirebaseFirestore.getInstance().collection("Icons").document(firebaseUser.getUid())
+                    .collection("times").document("time");
+            documentReference_start.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Time time = documentSnapshot.toObject(Time.class);
+                    if (time != null) {
+                        if (time.getTime().equals(strDate)) {
+                            ifDownloadIcon = false;
+                        }
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    ifDownloadIcon = true;
+                }
+            });
+
+
+
+            if (ifDownloadIcon) {
+
+
+                try {
+                    URL url = new URL(getURL());
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line = "";
+                    while (line != null) {
+                        line = bufferedReader.readLine();
+                        data = data + line;
+                    }
+
+                    JSONObject jsonObject = new JSONObject(data);
+                    JSONObject jsonObject_rates = (JSONObject) jsonObject.get("rates");
+                    Double SHIL = (Double) jsonObject_rates.get("SHIL");
+                    Double DOLR = (Double) jsonObject_rates.get("DOLR");
+                    Double QUID = (Double) jsonObject_rates.get("QUID");
+                    Double PENY = (Double) jsonObject_rates.get("PENY");
+
+
+                    DocumentReference documentReference = FirebaseFirestore.getInstance().collection("Icons").document(firebaseUser.getUid())
+                            .collection("times").document("time");
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("time", strDate);
+                    documentReference.set(hashMap);
+
+                    DocumentReference rates = FirebaseFirestore.getInstance()
+                            .collection("Icons").document(firebaseUser.getUid())
+                            .collection("Rates").document("rate");
+                    HashMap<String, Object> hashMap_rate = new HashMap<>();
+                    hashMap_rate.put("SHIL", SHIL);
+                    hashMap_rate.put("DOLR", DOLR);
+                    hashMap_rate.put("QUID", QUID);
+                    hashMap_rate.put("PENY", PENY);
+                    rates.set(hashMap_rate);
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return null;
+
+        }
+
     }
 
 
@@ -187,8 +315,18 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             map.getUiSettings().setCompassEnabled(true);
             map.getUiSettings().setZoomControlsEnabled(true);
             enableLocation();
+
             initLayerIcons();
             addClusteredGeoJsonSource();
+
+//            geoJsonString = getStringFromFile(Uri(getURL()), Activity_One.this);
+//
+//
+//            GeoJsonSource source = new GeoJsonSource("geojson", geoJsonString);
+//            mapboxMap.addSource(source);
+//            mapboxMap.addLayer(new LineLayer("geojson", "geojson"));
+
+
             Toast.makeText(Activity_One.this, R.string.common_google_play_services_enable_text,
                     Toast.LENGTH_SHORT).show();
         }
@@ -459,6 +597,36 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
+    private static String convertStreamToString(InputStream is) throws Exception {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+
+
+    public static String getStringFromFile(Uri fileUri, Context context) throws Exception {
+        InputStream fin = context.getContentResolver().openInputStream(fileUri);
+
+        String ret = convertStreamToString(fin);
+
+        fin.close();
+        return ret;
+    }
+
+
+
+
+
+
+
 
     private void addClusteredGeoJsonSource() {
         // Add a new source from the GeoJSON data and set the 'cluster' option to true.
@@ -467,7 +635,6 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     new GeoJsonSource("coins",
                             new URL(getURL()),
                             new GeoJsonOptions()
-                                    .withCluster(true)
                                     .withClusterMaxZoom(15)
                                     .withClusterRadius(50)
                     )
@@ -487,42 +654,42 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
         // Use the earthquakes GeoJSON source to create three point ranges.
-        int[] layers = new int[] {150, 20, 0};
-
-        for (int i = 0; i < layers.length; i++) {
-            //Add clusters' SymbolLayers images
-            SymbolLayer symbolLayer = new SymbolLayer("cluster-" + i, "coins");
-
-            symbolLayer.setProperties(
-                    iconImage("quake-triangle-icon-id"),
-                    iconTranslate(new Float[] {0f, -9f})
-            );
-            Expression pointCount = toNumber(get("point_count"));
-
-            // Add a filter to the cluster layer that hides the icons based on "point_count"
-            symbolLayer.setFilter(
-                    i == 0
-                            ? all(has("point_count"),
-                            gte(pointCount, literal(layers[i]))
-                    ) : all(has("point_count"),
-                            gt(pointCount, literal(layers[i])),
-                            lt(pointCount, literal(layers[i - 1]))
-                    )
-            );
-            map.addLayer(symbolLayer);
+//        int[] layers = new int[] {150, 20, 0};
+//
+//        for (int i = 0; i < layers.length; i++) {
+//            //Add clusters' SymbolLayers images
+//            SymbolLayer symbolLayer = new SymbolLayer("cluster-" + i, "coins");
+//
+//            symbolLayer.setProperties(
+//                    iconImage("quake-triangle-icon-id"),
+//                    iconTranslate(new Float[] {0f, -9f})
+//            );
+//            Expression pointCount = toNumber(get("point_count"));
+//
+//            // Add a filter to the cluster layer that hides the icons based on "point_count"
+//            symbolLayer.setFilter(
+//                    i == 0
+//                            ? all(has("point_count"),
+//                            gte(pointCount, literal(layers[i]))
+//                    ) : all(has("point_count"),
+//                            gt(pointCount, literal(layers[i])),
+//                            lt(pointCount, literal(layers[i - 1]))
+//                    )
+//            );
+//            map.addLayer(symbolLayer);
         }
 
         //Add a SymbolLayer for the cluster data number point count
-        SymbolLayer count = new SymbolLayer("count", "coins");
-        count.setProperties(
-                textField(Expression.toString(get("point_count"))),
-                textSize(12f),
-                textColor(Color.BLACK),
-                textIgnorePlacement(true),
-                textAllowOverlap(true)
-        );
-        map.addLayer(count);
-    }
+//        SymbolLayer count = new SymbolLayer("count", "coins");
+//        count.setProperties(
+//                textField(Expression.toString(get("point_count"))),
+//                textSize(12f),
+//                textColor(Color.BLACK),
+//                textIgnorePlacement(true),
+//                textAllowOverlap(true)
+//        );
+//        map.addLayer(count);
+//    }
 
 
 }

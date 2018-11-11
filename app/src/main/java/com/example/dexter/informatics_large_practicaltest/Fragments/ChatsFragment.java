@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.dexter.informatics_large_practicaltest.Adapter.UserAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Chat;
+import com.example.dexter.informatics_large_practicaltest.Model.Chatlist;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.example.dexter.informatics_large_practicaltest.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -52,7 +54,7 @@ public class ChatsFragment extends Fragment {
 
     DocumentReference documentReference;
 
-    private List<String> usersList;
+    private List<Chatlist> usersList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,186 +69,59 @@ public class ChatsFragment extends Fragment {
 
         usersList = new ArrayList<>();
 
-        collectionReference = FirebaseFirestore.getInstance().collection("Chats");
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionReference = FirebaseFirestore.getInstance().collection("Chatlist")
+                .document(fuser.getUid())
+                .collection("Users");
+        Query order = collectionReference.orderBy("time_stamp",Query.Direction.DESCENDING);
+
+        order.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 usersList.clear();
                 if (queryDocumentSnapshots != null) {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-
-                        for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
-                            Chat chat = d.toObject(Chat.class);
-                            if (chat.getReceiver().equals(fuser.getUid()) ) {
-                                usersList.add(chat.getSender());
-                            }
-
-                            if (chat.getSender().equals(fuser.getUid())){
-                                usersList.add(chat.getReceiver());
-                            }
-                        }
-                        readChats();
+                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                        Chatlist chatlist = d.toObject(Chatlist.class);
+                        usersList.add(chatlist);
                     }
+
+                    chatlist();
                 }
 
             }
         });
 
 
-//        documentReference.collection("Chats").get()
-//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        if (!queryDocumentSnapshots.isEmpty()) {
-//                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-//                            for (DocumentSnapshot d : list) {
-//                                Chat chat = d.toObject(Chat.class);
-//                                if (chat.getReceiver().equals(fuser.getUid()) ) {
-//                                    usersList.add(chat.getSender());
-//                                }
-//
-//                                if (chat.getSender().equals(fuser.getUid())){
-//                                    usersList.add(chat.getReceiver());
-//                                }
-//                            }
-//                            readChats();
-//                        }
-//
-//                    }
-//                });
 
 
-//        reference = FirebaseDatabase.getInstance().getReference("Chats");
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                usersList.clear();
-//
-//                for (DataSnapshot snapshot :dataSnapshot.getChildren()) {
-//                    Chat chat = snapshot.getValue(Chat.class);
-//                    if (chat.getReceiver().equals(fuser.getUid()) ) {
-//                        usersList.add(chat.getSender());
-//                    }
-//
-//                    if (chat.getSender().equals(fuser.getUid())){
-//                        usersList.add(chat.getReceiver());
-//                    }
-//                }
-//
-//                readChats();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
         return view;
     }
 
-
-    private void readChats() {
-        mUser  =  new ArrayList<>();
-
-
+    private void chatlist() {
+        mUser = new ArrayList<>();
         collectionReference = FirebaseFirestore.getInstance().collection("User");
         collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 mUser.clear();
                 if (queryDocumentSnapshots != null) {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-
+                    for (Chatlist chatlist : usersList) {
                         for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
-                            User user = new User ();
-                            user.setId(d.toObject(User.class).getId());
-                            user.setImageURL(d.toObject(User.class).getImageURL());
-                            user.setStatus(d.toObject(User.class).getStatus());
-                            user.setUsername(d.toObject(User.class).getUsername());
-
-
-                            for (String id :usersList) {
-                                if (user.getId().equals(id)) {
-                                    if (mUser.size() != 0) {
-                                        int i = 0;
-                                        int m = 0;
-                                        while (i<mUser.size()) {
-                                            User user1 = mUser.get(i);
-                                            if (user.getId().equals(user1.getId())) {
-                                                m=1;
-                                            }
-
-                                            i++;
-                                        }
-                                        if (m == 0) {
-                                            mUser.add(user);
-                                        }
-
-
-
-
-//                                        for (int i=0; i<mUser.size();i++) {
-//                                            User user1 = mUser.get(i);
-//                                            if (!user.getId().equals(user1.getId())) {
-//                                                mUser.add(user);
-//                                            }
-//                                        }
-//                                        for (User userl : mUser) {
-//                                            if (!user.getId().equals(userl.getId())) {
-//                                            mUser.add(user);
-//                                            }
-//                                         }
-                                    } else {
-                                        mUser.add(user);
-                                    }
-                                }
+                            User user = d.toObject(User.class);
+                            if (chatlist.getId().equals(user.getId())) {
+                                mUser.add(user);
                             }
                         }
-                        userAdapter = new UserAdapter(getContext(), mUser, true);
-                        recyclerView.setAdapter(userAdapter);
-
-
                     }
+                    userAdapter = new UserAdapter(getContext(), mUser, true);
+                    recyclerView.setAdapter(userAdapter);
                 }
-
             }
         });
-
-//        reference = FirebaseDatabase.getInstance().getReference("User");
-//
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                mUser.clear();
-//                for (DataSnapshot snapshot :dataSnapshot.getChildren()) {
-//                    User user = snapshot.getValue(User.class);
-//
-//                    for (String id :usersList) {
-//                        if (user.getId().equals(id)) {
-//                            if (mUser.size() != 0) {
-//                                for (User userl : mUser) {
-//                                    if (!user.getId().equals(userl.getId())) {
-//                                        mUser.add(user);
-//                                    }
-//                                }
-//                            } else {
-//                                mUser.add(user);
-//                            }
-//                        }
-//                    }
-//
-//                }
-//                userAdapter = new UserAdapter(getContext(), mUser);
-//                recyclerView.setAdapter(userAdapter);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
     }
+
+
+
+
 
 
 }

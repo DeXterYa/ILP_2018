@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.dexter.informatics_large_practicaltest.Adapter.MessageAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Chat;
+import com.example.dexter.informatics_large_practicaltest.Model.Chatlist;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.firebase.client.Firebase;
 import com.firebase.client.ServerValue;
@@ -31,11 +32,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,6 +72,7 @@ public class MessageActivity extends AppCompatActivity {
     List<Chat> mChat;
 
     RecyclerView recyclerView;
+    @ServerTimestamp  public Date time;
 
 
     private int hint = 0;
@@ -191,32 +195,32 @@ public class MessageActivity extends AppCompatActivity {
     }
 
 
-    public static String getCurrentTimeStamp() {
+    public static Date getCurrentTimeStamp() {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");//dd/MM/yyyy
         Date now = new Date();
         String strDate = sdfDate.format(now);
-        return strDate;
+        return now;
     }
 
 
 
     private void seenMessage(String userid) {
         collectionReference = FirebaseFirestore.getInstance().collection("Chats");
-        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        Query query =  collectionReference.whereEqualTo("receiver", fUser.getUid())
+                .whereEqualTo("sender", userid);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (is_seen == 0) {
                     if (queryDocumentSnapshots != null) {
                         for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
                             Chat chat = d.toObject(Chat.class);
-                            if (chat.getReceiver().equals(fUser.getUid()) && chat.getSender().equals(userid)) {
-                                String id = d.getId();
-                                documentReference = FirebaseFirestore.getInstance().collection("Chats").document(id);
-                                HashMap<String, Object> map = new HashMap<>();
-                                map.put("isseen", true);
-                                documentReference.update(map);
+                            String id = d.getId();
+                            documentReference = FirebaseFirestore.getInstance().collection("Chats").document(id);
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("isseen", true);
+                            documentReference.update(map);
 
-                            }
                         }
                     }
                 }
@@ -227,10 +231,50 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendMessage(String sender, String receiver, String message) {
 
+
+
         collectionReference = FirebaseFirestore.getInstance().collection("Chats");
-        String time_stamp = getCurrentTimeStamp();
-        Chat chat = new Chat (sender, receiver, message, time_stamp, false);
-        collectionReference.add(chat);
+        Date time_stamp = getCurrentTimeStamp();
+
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", sender);
+        hashMap.put("receiver", receiver);
+        hashMap.put("message", message);
+        hashMap.put("time_stamp", FieldValue.serverTimestamp());
+        hashMap.put("isseen", false);
+        collectionReference.add(hashMap);
+
+
+        DocumentReference chatting1 = FirebaseFirestore.getInstance().collection("Chatlist").document(sender);
+        HashMap<String, String> Map1 = new HashMap<>();
+        chatting1.set(Map1);
+
+
+        DocumentReference chatRef1 = FirebaseFirestore.getInstance()
+                .collection("Chatlist").document(sender)
+                .collection("Users").document(receiver);
+
+        HashMap<String, Object> hashMap1 = new HashMap<>();
+        hashMap1.put("id", receiver);
+        hashMap1.put("time_stamp", FieldValue.serverTimestamp());
+        chatRef1.set(hashMap1);
+
+
+        DocumentReference chatting2 = FirebaseFirestore.getInstance().collection("Chatlist").document(receiver);
+        HashMap<String, String> Map2 = new HashMap<>();
+        chatting2.set(Map2);
+
+        DocumentReference chatRef2 = FirebaseFirestore.getInstance()
+                .collection("Chatlist").document(receiver)
+                .collection("Users").document(sender);
+
+        HashMap<String, Object> hashMap2 = new HashMap<>();
+        hashMap2.put("id", sender);
+        hashMap2.put("time_stamp", FieldValue.serverTimestamp());
+        chatRef2.set(hashMap2);
+
+
 //        HashMap<String, Object> hashMap = new HashMap<>();
 //        hashMap.put("sender", sender);
 //        hashMap.put("receiver", receiver);
