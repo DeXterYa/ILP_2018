@@ -52,6 +52,8 @@ import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -382,7 +384,11 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 //            mapboxMap.addLayer(new LineLayer("geojson", "geojson"));
 
 
-            addMarkers(mapMode);
+            AddMarkers addMarkers = new AddMarkers();
+            addMarkers.execute();
+
+
+//            AddMarkers(mapMode);
 
 
             Toast.makeText(Activity_One.this, R.string.common_google_play_services_enable_text,
@@ -392,28 +398,134 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    private class AddMarkers extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            CollectionReference mapMarkers = FirebaseFirestore.getInstance()
+                    .collection("Icons").document(firebaseUser.getUid())
+                    .collection("features");
+            mapMarkers.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    if (queryDocumentSnapshots != null) {
+                        for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                            Markersonmap markersonmap = d.toObject(Markersonmap.class);
+                            switch (markersonmap.getCurrency()) {
+                                case "SHIL":
+                                    IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
+                                    Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
+                                    map.addMarker(new MarkerOptions()
+                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                            .title(markersonmap.getCurrency())
+                                            .snippet(markersonmap.getValue())
+                                            .icon(icon1));
+                                    break;
+
+                                case "DOLR":
+                                    IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
+                                    Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
+                                    map.addMarker(new MarkerOptions()
+                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                            .title(markersonmap.getCurrency())
+                                            .snippet(markersonmap.getValue())
+                                            .icon(icon2));
+                                    break;
+
+                                case "PENY":
+                                    IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
+                                    Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
+                                    map.addMarker(new MarkerOptions()
+                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                            .title(markersonmap.getCurrency())
+                                            .snippet(markersonmap.getValue())
+                                            .icon(icon3));
+                                    break;
+
+                                case "QUID":
+                                    IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
+                                    Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
+                                    map.addMarker(new MarkerOptions()
+                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                            .title(markersonmap.getCurrency())
+                                            .snippet(markersonmap.getValue())
+                                            .icon(icon4));
+                                    break;
 
 
-    private  void addMarkers(String mode) {
-        CollectionReference mapMarkers = FirebaseFirestore.getInstance()
-                .collection("Icons").document(firebaseUser.getUid())
-                .collection("features");
-        mapMarkers.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
-                        Markersonmap markersonmap = d.toObject(Markersonmap.class);
-                        map.addMarker(new MarkerOptions()
-                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                        .title(markersonmap.getCurrency())
-                        .snippet(markersonmap.getValue()));
+                            }
 
+
+                        }
                     }
                 }
-            }
-        });
+            });
+            return null;
+        }
     }
+
+
+
+
+//    private  void AddMarkers(String mode)  {
+//        CollectionReference mapMarkers = FirebaseFirestore.getInstance()
+//                .collection("Icons").document(firebaseUser.getUid())
+//                .collection("features");
+//        mapMarkers.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+//                if (queryDocumentSnapshots != null) {
+//                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+//                        Markersonmap markersonmap = d.toObject(Markersonmap.class);
+//                        switch (markersonmap.getCurrency()) {
+//                            case "SHIL":
+//                                IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
+//                                Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
+//                                map.addMarker(new MarkerOptions()
+//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+//                                        .title(markersonmap.getCurrency())
+//                                        .snippet(markersonmap.getValue())
+//                                        .icon(icon1));
+//                                break;
+//
+//                            case "DOLR":
+//                                IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
+//                                Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
+//                                map.addMarker(new MarkerOptions()
+//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+//                                        .title(markersonmap.getCurrency())
+//                                        .snippet(markersonmap.getValue())
+//                                        .icon(icon2));
+//                                break;
+//
+//                            case "PENY":
+//                                IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
+//                                Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
+//                                map.addMarker(new MarkerOptions()
+//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+//                                        .title(markersonmap.getCurrency())
+//                                        .snippet(markersonmap.getValue())
+//                                        .icon(icon3));
+//                                break;
+//
+//                            case "QUID":
+//                                IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
+//                                Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
+//                                map.addMarker(new MarkerOptions()
+//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+//                                        .title(markersonmap.getCurrency())
+//                                        .snippet(markersonmap.getValue())
+//                                        .icon(icon4));
+//                                break;
+//
+//
+//                        }
+//
+//
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)){
