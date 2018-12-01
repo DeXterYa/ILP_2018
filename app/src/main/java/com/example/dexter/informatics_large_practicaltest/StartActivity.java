@@ -116,33 +116,23 @@ public class StartActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             String userid = user.getUid();
 
-                            reference = FirebaseDatabase.getInstance().getReference("User").child(userid);
 
-//                            HashMap<String, String> hashMap = new HashMap<>();
-//                            hashMap.put("id", userid);
-//                            hashMap.put("username", username);
-//                            hashMap.put("imageURL", "default");
-//
-//                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()){
-//                                        Intent intent = new Intent(StartActivity.this, MainActivity.class);
-//                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                        startActivity(intent);
-//                                        finish();
-//                                    }
-//                                }
-//                            });
 
                             documentReference = FirebaseFirestore.getInstance().collection("User").document(userid);
 
-                            HashMap<String, String> hashMap = new HashMap<>();
+                            HashMap<String, Object> hashMap = new HashMap<>();
                             hashMap.put("id", userid);
                             hashMap.put("username", username);
                             hashMap.put("imageURL", "default");
                             hashMap.put("status", "offline");
-                            hashMap.put ("search", username.toLowerCase());
+                            hashMap.put("search", username.toLowerCase());
+                            hashMap.put("SHIL", 0.0);
+                            hashMap.put("DOLR", 0.0);
+                            hashMap.put("QUID", 0.0);
+                            hashMap.put("PENY", 0.0);
+                            hashMap.put("GOLD", 0.0);
+                            hashMap.put("level", 0.0);
+
 
                             documentReference.set(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

@@ -8,6 +8,7 @@ import java.io.*;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import android.net.Uri;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.Time;
+import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -81,8 +83,10 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.net.MalformedURLException;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -103,6 +107,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
+import static java.sql.DriverManager.println;
 
 public class Activity_One extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, MapboxMap.OnMapClickListener {
     private String tag = "ActivityOne";
@@ -121,11 +126,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private NavigationMapRoute navigationMapRoute;
     private static final  String TAG = "Activity_One";
     private int ifDownloadIcon;
-
-    private String mapMode;
-
-    private String geoJsonString;
-
+    private String nameOfCoin = "";
+    private Double valueOfCoin = 0.0;
+    HashMap<String, String>coinsOnMap = new HashMap<>();
     FirebaseUser firebaseUser;
 
 
@@ -373,22 +376,10 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             map.getUiSettings().setZoomControlsEnabled(true);
             enableLocation();
 
-//            initLayerIcons();
-//            addClusteredGeoJsonSource();
-
-//            geoJsonString = getStringFromFile(Uri(getURL()), Activity_One.this);
-//
-//
-//            GeoJsonSource source = new GeoJsonSource("geojson", geoJsonString);
-//            mapboxMap.addSource(source);
-//            mapboxMap.addLayer(new LineLayer("geojson", "geojson"));
-
 
             AddMarkers addMarkers = new AddMarkers();
             addMarkers.execute();
 
-
-//            AddMarkers(mapMode);
 
 
             Toast.makeText(Activity_One.this, R.string.common_google_play_services_enable_text,
@@ -412,41 +403,49 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                             Markersonmap markersonmap = d.toObject(Markersonmap.class);
                             switch (markersonmap.getCurrency()) {
                                 case "SHIL":
+//                                    Double[] coinLoc_1 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
+                                    coinsOnMap.put(d.getId(), "SHIL");
                                     IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
                                     Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
                                     map.addMarker(new MarkerOptions()
                                             .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(markersonmap.getCurrency())
+                                            .title(d.getId())
                                             .snippet(markersonmap.getValue())
                                             .icon(icon1));
                                     break;
 
                                 case "DOLR":
+//                                    Double[] coinLoc_2 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
+                                    coinsOnMap.put(d.getId(), "DOLR");
                                     IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
                                     Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
                                     map.addMarker(new MarkerOptions()
                                             .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(markersonmap.getCurrency())
+                                            .title(d.getId())
                                             .snippet(markersonmap.getValue())
                                             .icon(icon2));
                                     break;
 
                                 case "PENY":
+//                                    Double[] coinLoc_3 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
+                                    coinsOnMap.put(d.getId(), "PENY");
                                     IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
                                     Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
                                     map.addMarker(new MarkerOptions()
                                             .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(markersonmap.getCurrency())
+                                            .title(d.getId())
                                             .snippet(markersonmap.getValue())
                                             .icon(icon3));
                                     break;
 
                                 case "QUID":
+//                                    Double[] coinLoc_4 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
+                                    coinsOnMap.put(d.getId(), "QUID");
                                     IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
                                     Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
                                     map.addMarker(new MarkerOptions()
                                             .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(markersonmap.getCurrency())
+                                            .title(d.getId())
                                             .snippet(markersonmap.getValue())
                                             .icon(icon4));
                                     break;
@@ -466,66 +465,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
-//    private  void AddMarkers(String mode)  {
-//        CollectionReference mapMarkers = FirebaseFirestore.getInstance()
-//                .collection("Icons").document(firebaseUser.getUid())
-//                .collection("features");
-//        mapMarkers.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-//                if (queryDocumentSnapshots != null) {
-//                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
-//                        Markersonmap markersonmap = d.toObject(Markersonmap.class);
-//                        switch (markersonmap.getCurrency()) {
-//                            case "SHIL":
-//                                IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
-//                                Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
-//                                map.addMarker(new MarkerOptions()
-//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-//                                        .title(markersonmap.getCurrency())
-//                                        .snippet(markersonmap.getValue())
-//                                        .icon(icon1));
-//                                break;
-//
-//                            case "DOLR":
-//                                IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
-//                                Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
-//                                map.addMarker(new MarkerOptions()
-//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-//                                        .title(markersonmap.getCurrency())
-//                                        .snippet(markersonmap.getValue())
-//                                        .icon(icon2));
-//                                break;
-//
-//                            case "PENY":
-//                                IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
-//                                Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
-//                                map.addMarker(new MarkerOptions()
-//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-//                                        .title(markersonmap.getCurrency())
-//                                        .snippet(markersonmap.getValue())
-//                                        .icon(icon3));
-//                                break;
-//
-//                            case "QUID":
-//                                IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
-//                                Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
-//                                map.addMarker(new MarkerOptions()
-//                                        .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-//                                        .title(markersonmap.getCurrency())
-//                                        .snippet(markersonmap.getValue())
-//                                        .icon(icon4));
-//                                break;
-//
-//
-//                        }
-//
-//
-//                    }
-//                }
-//            }
-//        });
-//    }
+
 
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)){
@@ -557,6 +497,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
+
     @SuppressWarnings("MissingPermission")
     private void initializeLocationLayer() {
         if (mapView == null) {
@@ -653,7 +595,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onLocationChanged(Location location) {
         if (location == null) {
@@ -662,9 +604,92 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             Log.d(tag, "[onLocationChanged] location is not null");
             originLocation = location;
             setCameraPosition(location);
+            Location currentLocation = locationEngine.getLastLocation();
+            if(currentLocation != null) {
+
+                Iterator<Marker> iter = map.getMarkers().iterator();
+                while (iter.hasNext()) {
+                    Marker marker = iter.next();
+                    Double latitude = marker.getPosition().getLatitude();
+                    Double longitude = marker.getPosition().getLongitude();
+                    Location newLocation = new Location("newlocation");
+                    newLocation.setLatitude(latitude);
+                    newLocation.setLongitude(longitude);
+                    String name = marker.getTitle();
+                    if (currentLocation.distanceTo(newLocation) <= 25) {
+                        DocumentReference documentReference = FirebaseFirestore.getInstance()
+                                .collection("Icons").document(firebaseUser.getUid())
+                                .collection("features").document(marker.getTitle());
+
+
+
+                        nameOfCoin = coinsOnMap.get(marker.getTitle());
+                        valueOfCoin = Double.parseDouble(marker.getSnippet());
+                        DocumentReference docRe = FirebaseFirestore.getInstance()
+                                .collection("User").document(firebaseUser.getUid());
+                        docRe.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                User user = documentSnapshot.toObject(User.class);
+                                switch (nameOfCoin) {
+                                    case "SHIL":
+                                        Double newVal_s = user.getSHIL() + valueOfCoin;
+                                        HashMap<String, Object> updv_s = new HashMap<>();
+                                        updv_s.put("SHIL", newVal_s);
+                                        docRe.update(updv_s);
+                                        updv_s.clear();
+                                        break;
+
+                                    case "DOLR":
+                                        Double newVal_d = user.getDOLR() + valueOfCoin;
+                                        HashMap<String, Object> updv_d = new HashMap<>();
+                                        updv_d.put("DOLR", newVal_d);
+                                        docRe.update(updv_d);
+                                        updv_d.clear();
+                                        break;
+
+                                    case "QUID":
+                                        Double newVal_q = user.getQUID() + valueOfCoin;
+                                        HashMap<String, Object> updv_q = new HashMap<>();
+                                        updv_q.put("QUID", newVal_q);
+                                        docRe.update(updv_q);
+                                        updv_q.clear();
+                                        break;
+
+                                    case "PENY":
+                                        Double newVal_p = user.getPENY() + valueOfCoin;
+                                        HashMap<String, Object> updv_p = new HashMap<>();
+                                        updv_p.put("PENY", newVal_p);
+                                        docRe.update(updv_p);
+                                        updv_p.clear();
+                                        break;
+
+                                }
+
+                            }
+                        });
+
+                        documentReference.delete();
+                        iter.remove();
+                        map.removeMarker(marker);
+                    }
+                }
+            }
+//            CalculatePosition calculatePosition = new CalculatePosition();
+//            calculatePosition.execute();
         }
 
     }
+//    @SuppressWarnings("MissingPermission")
+//    private class Delete extends AsyncTask<Void,Void,Void>{
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//
+//
+//            return null;
+//        }
+//    }
+
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {

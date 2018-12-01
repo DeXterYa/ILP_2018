@@ -6,13 +6,28 @@ public class User implements Cloneable{
     private String imageURL;
     private String status;
     private String search;
+    private Double SHIL;
+    private Double DOLR;
+    private Double QUID;
+    private Double PENY;
+    private Double GOLD;
+    private Double level;
 
-    public User(String id, String username, String imageURL, String status, String search) {
+
+    public User(String id, String username, String imageURL, String status, String search,
+                Double SHIL, Double DOLR, Double QUID, Double PENY, Double GOLD, Double level) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
         this.status = status;
         this.search = search;
+        this.SHIL = SHIL;
+        this.DOLR = DOLR;
+        this.QUID = QUID;
+        this.PENY = PENY;
+        this.GOLD = GOLD;
+        this.level = level;
+
     }
 
     public User() {
@@ -57,6 +72,54 @@ public class User implements Cloneable{
 
     public void setSearch(String search) {
         this.search = search;
+    }
+
+    public Double getSHIL() {
+        return SHIL;
+    }
+
+    public void setSHIL(Double SHIL) {
+        this.SHIL = SHIL;
+    }
+
+    public Double getDOLR() {
+        return DOLR;
+    }
+
+    public void setDOLR(Double DOLR) {
+        this.DOLR = DOLR;
+    }
+
+    public Double getQUID() {
+        return QUID;
+    }
+
+    public void setQUID(Double QUID) {
+        this.QUID = QUID;
+    }
+
+    public Double getPENY() {
+        return PENY;
+    }
+
+    public void setPENY(Double PENY) {
+        this.PENY = PENY;
+    }
+
+    public Double getGOLD() {
+        return GOLD;
+    }
+
+    public void setGOLD(Double GOLD) {
+        this.GOLD = GOLD;
+    }
+
+    public Double getLevel() {
+        return level;
+    }
+
+    public void setLevel(Double level) {
+        this.level = level;
     }
 
     @Override
