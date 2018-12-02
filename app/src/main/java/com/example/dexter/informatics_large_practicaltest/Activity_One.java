@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.lang.*;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,6 +25,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
@@ -84,9 +87,11 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.Queue;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -128,8 +133,33 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private int ifDownloadIcon;
     private String nameOfCoin = "";
     private Double valueOfCoin = 0.0;
+    Queue<String> namesOfCoins = new LinkedList<>();
+    Queue<Double> valuesOfCoins = new LinkedList<>();
+    Queue<String> addNamesOfCoins = new LinkedList<>();
+    Queue<String> addTitlesOfCoins = new LinkedList<>();
+    Queue<Double> addValuesOfCoins = new LinkedList<>();
+
+
     HashMap<String, String>coinsOnMap = new HashMap<>();
     FirebaseUser firebaseUser;
+    boolean ifAddMarkers;
+    boolean ifCompleteDownload;
+    boolean ifCompleteAdd;
+    TextView valueOfShil;
+    TextView valueOfPeny;
+    TextView valueOfQuid;
+    TextView valueOfDolr;
+    ImageView imageOfShil;
+    ImageView imageOfPeny;
+    ImageView imageOfQuid;
+    ImageView imageOfDolr;
+
+//    private ChangeCoinsValue changeCoinsValue;
+//    private DownloadIcon downloadIcon;
+//    private AddMarkers addMarkers;
+//    private Delete delete;
+
+
 
 
     String dataNow;
@@ -140,11 +170,29 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ifAddMarkers = true;
+        ifCompleteAdd = false;
+        ifCompleteDownload = false;
+
+
         Mapbox.getInstance(this,getString(R.string.access_token));
         setContentView(R.layout.acitivity_one);
+
+
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        valueOfDolr = (TextView) findViewById(R.id.valueofdolr);
+        valueOfPeny = (TextView) findViewById(R.id.valueofpeny);
+        valueOfQuid = (TextView) findViewById(R.id.valueofquid);
+        valueOfShil = (TextView) findViewById(R.id.valueofshil);
+        imageOfDolr = findViewById(R.id.dolr);
+        imageOfPeny = findViewById(R.id.peny);
+        imageOfQuid = findViewById(R.id.quid);
+        imageOfShil = findViewById(R.id.shil);
+
+
 
         navigationButton = findViewById(R.id.navigation_button);
 
@@ -237,6 +285,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                 DownloadIcon downloadIcon = new DownloadIcon();
                                 downloadIcon.execute();
                             }
+                            else {
+                                ifCompleteDownload = true;
+                            }
                         }
                         if(time == null) {
                             DownloadIcon downloadIcon = new DownloadIcon();
@@ -253,7 +304,32 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
+        ChangeCoinsValue changeCoinsValue = new ChangeCoinsValue();
+        changeCoinsValue.execute();
 
+    }
+
+    private class ChangeCoinsValue extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            DocumentReference coinsValue = FirebaseFirestore.getInstance()
+                    .collection("User").document(firebaseUser.getUid());
+            coinsValue.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
+                        User user = documentSnapshot.toObject(User.class);
+                        valueOfDolr.setText(String.format("%.2f", user.getDOLR()));
+                        valueOfPeny.setText(String.format("%.2f", user.getPENY()));
+                        valueOfQuid.setText(String.format("%.2f", user.getQUID()));
+                        valueOfShil.setText(String.format("%.2f", user.getSHIL()));
+                    }
+                }
+            });
+
+
+            return null;
+        }
     }
 
 
@@ -292,6 +368,15 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     Double QUID = (Double) jsonObject_rates.get("QUID");
                     Double PENY = (Double) jsonObject_rates.get("PENY");
 
+                    DocumentReference documentReference_USER = FirebaseFirestore.getInstance()
+                            .collection("User").document(firebaseUser.getUid());
+                    HashMap<String, Object> hashMap_USER = new HashMap<>();
+                    hashMap_USER.put("DOLR", 0.0);
+                    hashMap_USER.put("PENY", 0.0);
+                    hashMap_USER.put("QUID", 0.0);
+                    hashMap_USER.put("SHIL", 0.0);
+                    documentReference_USER.update(hashMap_USER);
+
 
                     DocumentReference documentReference = FirebaseFirestore.getInstance()
                             .collection("Icons").document(firebaseUser.getUid())
@@ -299,6 +384,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     HashMap<String, Object> hashMap = new HashMap<>();
                     hashMap.put("time", strDate);
                     documentReference.set(hashMap);
+
+
 
                     DocumentReference rates = FirebaseFirestore.getInstance()
                             .collection("Icons").document(firebaseUser.getUid())
@@ -344,9 +431,12 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                         hashMap_features.put("color", COLOR);
                         hashMap_features.put("longitude", longitude);
                         hashMap_features.put("latitude", latitude);
+                        hashMap_features.put("isCollected", false);
+                        hashMap_features.put("isCollected_1", 0);
                         properties.set(hashMap_features);
 
         }
+                    ifCompleteDownload = true;
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -398,63 +488,68 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             mapMarkers.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                    if (queryDocumentSnapshots != null) {
-                        for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
-                            Markersonmap markersonmap = d.toObject(Markersonmap.class);
-                            switch (markersonmap.getCurrency()) {
-                                case "SHIL":
+                    ifAddMarkers = !ifCompleteAdd && ifCompleteDownload;
+                    if (ifAddMarkers) {
+                        if (queryDocumentSnapshots != null) {
+                            for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                                Markersonmap markersonmap = d.toObject(Markersonmap.class);
+                                switch (markersonmap.getCurrency()) {
+                                    case "SHIL":
 //                                    Double[] coinLoc_1 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
-                                    coinsOnMap.put(d.getId(), "SHIL");
-                                    IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
-                                    Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
-                                    map.addMarker(new MarkerOptions()
-                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(d.getId())
-                                            .snippet(markersonmap.getValue())
-                                            .icon(icon1));
-                                    break;
+                                        coinsOnMap.put(d.getId(), "SHIL");
+                                        IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
+                                        Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                                .title(d.getId())
+                                                .snippet(markersonmap.getValue())
+                                                .icon(icon1));
+                                        break;
 
-                                case "DOLR":
+                                    case "DOLR":
 //                                    Double[] coinLoc_2 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
-                                    coinsOnMap.put(d.getId(), "DOLR");
-                                    IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
-                                    Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
-                                    map.addMarker(new MarkerOptions()
-                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(d.getId())
-                                            .snippet(markersonmap.getValue())
-                                            .icon(icon2));
-                                    break;
+                                        coinsOnMap.put(d.getId(), "DOLR");
+                                        IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
+                                        Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                                .title(d.getId())
+                                                .snippet(markersonmap.getValue())
+                                                .icon(icon2));
+                                        break;
 
-                                case "PENY":
+                                    case "PENY":
 //                                    Double[] coinLoc_3 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
-                                    coinsOnMap.put(d.getId(), "PENY");
-                                    IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
-                                    Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
-                                    map.addMarker(new MarkerOptions()
-                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(d.getId())
-                                            .snippet(markersonmap.getValue())
-                                            .icon(icon3));
-                                    break;
+                                        coinsOnMap.put(d.getId(), "PENY");
+                                        IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
+                                        Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                                .title(d.getId())
+                                                .snippet(markersonmap.getValue())
+                                                .icon(icon3));
+                                        break;
 
-                                case "QUID":
+                                    case "QUID":
 //                                    Double[] coinLoc_4 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
-                                    coinsOnMap.put(d.getId(), "QUID");
-                                    IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
-                                    Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
-                                    map.addMarker(new MarkerOptions()
-                                            .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
-                                            .title(d.getId())
-                                            .snippet(markersonmap.getValue())
-                                            .icon(icon4));
-                                    break;
+                                        coinsOnMap.put(d.getId(), "QUID");
+                                        IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
+                                        Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(markersonmap.getLatitude(), markersonmap.getLongitude()))
+                                                .title(d.getId())
+                                                .snippet(markersonmap.getValue())
+                                                .icon(icon4));
+                                        break;
+
+
+                                }
 
 
                             }
-
-
                         }
+                        ifCompleteAdd = true;
+
                     }
                 }
             });
@@ -620,75 +715,122 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                         DocumentReference documentReference = FirebaseFirestore.getInstance()
                                 .collection("Icons").document(firebaseUser.getUid())
                                 .collection("features").document(marker.getTitle());
-
-
+                        HashMap<String, Object> check = new HashMap<>();
+                        check.put("isCollected", true);
+                        check.put("isCollected_1", 1);
+                        documentReference.update(check);
 
                         nameOfCoin = coinsOnMap.get(marker.getTitle());
                         valueOfCoin = Double.parseDouble(marker.getSnippet());
-                        DocumentReference docRe = FirebaseFirestore.getInstance()
-                                .collection("User").document(firebaseUser.getUid());
-                        docRe.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                            @Override
-                            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                                User user = documentSnapshot.toObject(User.class);
-                                switch (nameOfCoin) {
-                                    case "SHIL":
-                                        Double newVal_s = user.getSHIL() + valueOfCoin;
-                                        HashMap<String, Object> updv_s = new HashMap<>();
-                                        updv_s.put("SHIL", newVal_s);
-                                        docRe.update(updv_s);
-                                        updv_s.clear();
-                                        break;
+                        namesOfCoins.add(nameOfCoin);
+                        valuesOfCoins.add(valueOfCoin);
 
-                                    case "DOLR":
-                                        Double newVal_d = user.getDOLR() + valueOfCoin;
-                                        HashMap<String, Object> updv_d = new HashMap<>();
-                                        updv_d.put("DOLR", newVal_d);
-                                        docRe.update(updv_d);
-                                        updv_d.clear();
-                                        break;
+                        addNamesOfCoins.add(nameOfCoin);
+                        addValuesOfCoins.add(valueOfCoin);
+                        addTitlesOfCoins.add(marker.getTitle());
 
-                                    case "QUID":
-                                        Double newVal_q = user.getQUID() + valueOfCoin;
-                                        HashMap<String, Object> updv_q = new HashMap<>();
-                                        updv_q.put("QUID", newVal_q);
-                                        docRe.update(updv_q);
-                                        updv_q.clear();
-                                        break;
 
-                                    case "PENY":
-                                        Double newVal_p = user.getPENY() + valueOfCoin;
-                                        HashMap<String, Object> updv_p = new HashMap<>();
-                                        updv_p.put("PENY", newVal_p);
-                                        docRe.update(updv_p);
-                                        updv_p.clear();
-                                        break;
 
-                                }
 
-                            }
-                        });
 
-                        documentReference.delete();
                         iter.remove();
                         map.removeMarker(marker);
                     }
                 }
+                Delete delete = new Delete();
+                delete.execute();
+
+
             }
-//            CalculatePosition calculatePosition = new CalculatePosition();
-//            calculatePosition.execute();
+
         }
 
     }
-//    @SuppressWarnings("MissingPermission")
-//    private class Delete extends AsyncTask<Void,Void,Void>{
+
+//    private class AddCoinsToUser extends AsyncTask<Void,Void,Void>{
 //        @Override
 //        protected Void doInBackground(Void... voids) {
+//            DocumentReference addTime = FirebaseFirestore.getInstance()
+//                    .collection("Coins").document(firebaseUser.getUid())
+//                    .collection("time").document("time");
 //
-//
+//            while (addNamesOfCoins.size() != 0) {
+//                String titleOfCoin = addTitlesOfCoins.poll();
+//                String nameOfCoin = addNamesOfCoins.poll();
+//                Double valueOfCoin = addValuesOfCoins.poll();
+//                DocumentReference aCTU = FirebaseFirestore.getInstance()
+//                        .collection("Coins").document(firebaseUser.getUid())
+//                        .collection("coin").document(titleOfCoin);
+//                HashMap<String, Object> hashMap_coin = new HashMap<>();
+//                hashMap_coin.put("currency", nameOfCoin);
+//                hashMap_coin.put("value", valueOfCoin);
+//                aCTU.set(hashMap_coin);
+//            }
 //            return null;
 //        }
+//
 //    }
+
+    private class Delete extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            DocumentReference docRe = FirebaseFirestore.getInstance()
+                    .collection("User").document(firebaseUser.getUid());
+            docRe.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    User user = documentSnapshot.toObject(User.class);
+                    while (namesOfCoins.size() != 0) {
+                        String nameInDelete = namesOfCoins.poll();
+                        Double valueInDelete = valuesOfCoins.poll();
+                        switch (nameInDelete) {
+                            case "SHIL":
+                                Double newVal_s = user.getSHIL() + valueInDelete;
+                                HashMap<String, Object> updv_s = new HashMap<>();
+                                updv_s.put("SHIL", newVal_s);
+                                docRe.update(updv_s);
+                                updv_s.clear();
+                                break;
+
+                            case "DOLR":
+                                Double newVal_d = user.getDOLR() + valueInDelete;
+                                HashMap<String, Object> updv_d = new HashMap<>();
+                                updv_d.put("DOLR", newVal_d);
+                                docRe.update(updv_d);
+                                updv_d.clear();
+                                break;
+
+                            case "QUID":
+                                Double newVal_q = user.getQUID() + valueInDelete;
+                                HashMap<String, Object> updv_q = new HashMap<>();
+                                updv_q.put("QUID", newVal_q);
+                                docRe.update(updv_q);
+                                updv_q.clear();
+                                break;
+
+                            case "PENY":
+                                Double newVal_p = user.getPENY() + valueInDelete;
+                                HashMap<String, Object> updv_p = new HashMap<>();
+                                updv_p.put("PENY", newVal_p);
+                                docRe.update(updv_p);
+                                updv_p.clear();
+                                break;
+
+                            default:
+                                break;
+
+
+                        }
+                    }
+
+                }
+            });
+
+
+            return null;
+        }
+    }
 
 
     @Override
@@ -766,6 +908,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         }
         mapView.onStop();
 
+        ifCompleteAdd = false;
+        ifCompleteDownload = false;
+
 
     }
 
@@ -791,19 +936,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         mapView.onSaveInstanceState(outState);
     }
 
-    private void initLayerIcons() {
-        map.addImage("SHIL-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.letter_s)));
-        map.addImage("DOLR-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.letter_d)));
-        map.addImage("QUID-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.letter_q)));
-        map.addImage("PENY-marker", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.mipmap.letter_p)));
 
-        map.addImage("quake-triangle-icon-id", BitmapUtils.getBitmapFromDrawable(
-                getResources().getDrawable(R.drawable.mapbox_marker_icon_default)));
-    }
 
 
     private String getURL(){
@@ -816,99 +949,10 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    private static String convertStreamToString(InputStream is) throws Exception {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append("\n");
-        }
-        reader.close();
-        return sb.toString();
-    }
-
-
-
-    public static String getStringFromFile(Uri fileUri, Context context) throws Exception {
-        InputStream fin = context.getContentResolver().openInputStream(fileUri);
-
-        String ret = convertStreamToString(fin);
-
-        fin.close();
-        return ret;
-    }
 
 
 
 
-
-
-
-
-    private void addClusteredGeoJsonSource() {
-        // Add a new source from the GeoJSON data and set the 'cluster' option to true.
-        try {
-            map.addSource(
-                    new GeoJsonSource("coins",
-                            new URL(getURL()),
-                            new GeoJsonOptions()
-                                    .withClusterMaxZoom(15)
-                                    .withClusterRadius(50)
-                    )
-            );
-        } catch (MalformedURLException malformedUrlException) {
-            Log.e("dataClusterActivity", "Check the URL " + malformedUrlException.getMessage());
-        }
-
-        //Creating a SymbolLayer icon layer for single data/icon points
-        SymbolLayer unclustered = new SymbolLayer("unclustered-points", "coins");
-
-        unclustered.setProperties(
-                iconImage("{currency}-marker")
-        );
-
-        map.addLayer(unclustered);
-
-
-        // Use the earthquakes GeoJSON source to create three point ranges.
-//        int[] layers = new int[] {150, 20, 0};
-//
-//        for (int i = 0; i < layers.length; i++) {
-//            //Add clusters' SymbolLayers images
-//            SymbolLayer symbolLayer = new SymbolLayer("cluster-" + i, "coins");
-//
-//            symbolLayer.setProperties(
-//                    iconImage("quake-triangle-icon-id"),
-//                    iconTranslate(new Float[] {0f, -9f})
-//            );
-//            Expression pointCount = toNumber(get("point_count"));
-//
-//            // Add a filter to the cluster layer that hides the icons based on "point_count"
-//            symbolLayer.setFilter(
-//                    i == 0
-//                            ? all(has("point_count"),
-//                            gte(pointCount, literal(layers[i]))
-//                    ) : all(has("point_count"),
-//                            gt(pointCount, literal(layers[i])),
-//                            lt(pointCount, literal(layers[i - 1]))
-//                    )
-//            );
-//            map.addLayer(symbolLayer);
-        }
-
-        //Add a SymbolLayer for the cluster data number point count
-//        SymbolLayer count = new SymbolLayer("count", "coins");
-//        count.setProperties(
-//                textField(Expression.toString(get("point_count"))),
-//                textSize(12f),
-//                textColor(Color.BLACK),
-//                textIgnorePlacement(true),
-//                textAllowOverlap(true)
-//        );
-//        map.addLayer(count);
-//    }
 
 
 }

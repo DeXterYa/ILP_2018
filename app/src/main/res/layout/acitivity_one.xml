@@ -26,6 +26,87 @@
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="140dp"
+        android:background="#8affffff" />
+
+
+    <ImageView
+        android:id="@+id/dolr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/dolr"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="13dp"
+        android:visibility="visible"/>
+    <TextView
+        android:id="@+id/valueofdolr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/dolr"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:text="0.0"
+        android:visibility="visible"/>
+    <ImageView
+        android:id="@+id/peny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/peny"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/dolr"
+        android:layout_marginStart="13dp"
+        android:visibility="visible"/>
+    <TextView
+        android:id="@+id/valueofpeny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/peny"
+        android:layout_marginTop="41dp"
+        android:layout_marginLeft="10dp"
+        android:text="0.0"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/quid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/quid"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/peny"
+        android:layout_marginStart="13dp"
+        android:visibility="visible" />
+    <TextView
+        android:id="@+id/valueofquid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/quid"
+        android:layout_marginTop="73dp"
+        android:layout_marginLeft="10dp"
+        android:text="0.0"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/shil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/shil"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/quid"
+        android:layout_marginStart="13dp"
+        android:visibility="visible"/>
+    <TextView
+        android:id="@+id/valueofshil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/shil"
+        android:layout_marginTop="105dp"
+        android:layout_marginLeft="10dp"
+        android:text="0.0"
+        android:visibility="visible"/>
+
+
 
     <Button
         android:id="@+id/navigation_button"
