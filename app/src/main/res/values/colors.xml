@@ -10,4 +10,5 @@
     <color name="mapboxGolden">#fbe542</color>
     <color name="unactivate">#737371</color>
     <color name="colorSearch">#00695c</color>
+    <color name="colorControlActivated">#50FF4081</color>
 </resources>

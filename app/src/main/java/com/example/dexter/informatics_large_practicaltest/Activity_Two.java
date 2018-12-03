@@ -57,6 +57,11 @@ public class Activity_Two extends AppCompatActivity {
     Double rateSHIL;
     Double rateINTEREST;
 
+    Double floatValueOfDolr;
+    Double floatValueOfPeny;
+    Double floatValueOfQuid;
+    Double floatValueOfShil;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +83,8 @@ public class Activity_Two extends AppCompatActivity {
         rateOfQUID = findViewById(R.id.quid_rate);
         rateOfSHIL = findViewById(R.id.shil_rate);
         rateOfInterest = findViewById(R.id.interest_rate);
+
+
 
 
 
@@ -130,7 +137,7 @@ public class Activity_Two extends AppCompatActivity {
         buttonOfDOLR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(Activity_Two.this, DolrActivity.class));
             }
         });
 
@@ -163,6 +170,11 @@ public class Activity_Two extends AppCompatActivity {
     private class ShowValues extends AsyncTask<Void,Void,Void>{
         @Override
         protected Void doInBackground(Void... voids) {
+            numberOfDOLR = 0;
+            numberOfPENY = 0;
+            numberOfQUID = 0;
+            numberOfSHIL = 0;
+
             CollectionReference informationOfCoins = FirebaseFirestore.getInstance()
                     .collection("Icons").document(firebaseUser.getUid())
                     .collection("features");
@@ -175,7 +187,7 @@ public class Activity_Two extends AppCompatActivity {
                             String fkdlsf = d.getId();
                             Double fdgg = markersonmap1.getLatitude();
                             int yuir = markersonmap1.getIsCollected_1();
-                            if (markersonmap1.getIsCollected_1() == 1) {
+                            if ((markersonmap1.getIsCollected_1() == 1)&&(markersonmap1.getIsStored()==0)) {
                                 switch (markersonmap1.getCurrency()) {
                                     case "DOLR":
                                         numberOfDOLR += 1;
@@ -192,32 +204,74 @@ public class Activity_Two extends AppCompatActivity {
                                 }
                             }
                         }
-                        buttonOfDOLR.setText("Value: "+String.format("%.2f", valueOfDOLR)+"  "+"Number: "+Integer.toString(numberOfDOLR));
-                        buttonOfPENY.setText("Value: "+String.format("%.2f", valueOfPENY)+"  "+"Number: "+Integer.toString(numberOfPENY));
-                        buttonOfQUID.setText("Value: "+String.format("%.2f", valueOfQUID)+"  "+"Number: "+Integer.toString(numberOfQUID));
-                        buttonOfSHIL.setText("Value: "+String.format("%.2f", valueOfSHIL)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+                        buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
+                        buttonOfPENY.setText("Value: "+String.format("%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY));
+                        buttonOfQUID.setText("Value: "+String.format("%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID));
+                        buttonOfSHIL.setText("Value: "+String.format("%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL));
                     }
                 }
             });
 
-            DocumentReference documentReference = FirebaseFirestore.getInstance()
-                    .collection("User").document(firebaseUser.getUid());
-            documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            floatValueOfDolr = 0.0;
+            floatValueOfPeny = 0.0;
+            floatValueOfQuid = 0.0;
+            floatValueOfShil = 0.0;
+            CollectionReference collectionReference3 = FirebaseFirestore.getInstance()
+                    .collection("Icons").document(firebaseUser.getUid())
+                    .collection("features");
+            collectionReference3.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                    if (documentSnapshot != null) {
-                        User user = documentSnapshot.toObject(User.class);
-                        valueOfDOLR = user.getDOLR();
-                        valueOfPENY = user.getPENY();
-                        valueOfQUID = user.getQUID();
-                        valueOfSHIL = user.getSHIL();
-                        buttonOfDOLR.setText("Value: "+String.format("%.2f", valueOfDOLR)+"  "+"Number: "+Integer.toString(numberOfDOLR));
-                        buttonOfPENY.setText("Value: "+String.format("%.2f", valueOfPENY)+"  "+"Number: "+Integer.toString(numberOfPENY));
-                        buttonOfQUID.setText("Value: "+String.format("%.2f", valueOfQUID)+"  "+"Number: "+Integer.toString(numberOfQUID));
-                        buttonOfSHIL.setText("Value: "+String.format("%.2f", valueOfSHIL)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+                public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    if (queryDocumentSnapshots != null) {
+                        for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                            Markersonmap markersonmap1 = d.toObject(Markersonmap.class);
+                            if ((markersonmap1.getIsCollected_1() == 1)&&(markersonmap1.getIsStored() == 0)) {
+                                switch (markersonmap1.getCurrency()) {
+                                    case "DOLR":
+                                        floatValueOfDolr += Double.parseDouble(markersonmap1.getValue());
+                                        break;
+
+                                    case "PENY":
+                                        floatValueOfPeny += Double.parseDouble(markersonmap1.getValue());
+                                        break;
+
+                                    case "QUID":
+                                        floatValueOfQuid += Double.parseDouble(markersonmap1.getValue());
+                                        break;
+
+                                    case "SHIL":
+                                        floatValueOfShil += Double.parseDouble(markersonmap1.getValue());
+                                        break;
+
+                                }
+                            }
+                        }
+                        buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
+                        buttonOfPENY.setText("Value: "+String.format("%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY));
+                        buttonOfQUID.setText("Value: "+String.format("%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID));
+                        buttonOfSHIL.setText("Value: "+String.format("%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL));
                     }
                 }
             });
+
+//            DocumentReference documentReference = FirebaseFirestore.getInstance()
+//                    .collection("User").document(firebaseUser.getUid());
+//            documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                @Override
+//                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+//                    if (documentSnapshot != null) {
+//                        User user = documentSnapshot.toObject(User.class);
+//                        valueOfDOLR = user.getDOLR();
+//                        valueOfPENY = user.getPENY();
+//                        valueOfQUID = user.getQUID();
+//                        valueOfSHIL = user.getSHIL();
+//                        buttonOfDOLR.setText("Value: "+String.format("%.2f", valueOfDOLR)+"  "+"Number: "+Integer.toString(numberOfDOLR));
+//                        buttonOfPENY.setText("Value: "+String.format("%.2f", valueOfPENY)+"  "+"Number: "+Integer.toString(numberOfPENY));
+//                        buttonOfQUID.setText("Value: "+String.format("%.2f", valueOfQUID)+"  "+"Number: "+Integer.toString(numberOfQUID));
+//                        buttonOfSHIL.setText("Value: "+String.format("%.2f", valueOfSHIL)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+//                    }
+//                }
+//            });
 
             DocumentReference documentReference1 = FirebaseFirestore.getInstance()
                     .collection("Icons").document(firebaseUser.getUid())
@@ -241,10 +295,10 @@ public class Activity_Two extends AppCompatActivity {
 
 
 
-            buttonOfDOLR.setText("Value: "+String.format("%.2f", valueOfDOLR)+"  "+"Number: "+Integer.toString(numberOfDOLR));
-            buttonOfPENY.setText("Value: "+String.format("%.2f", valueOfPENY)+"  "+"Number: "+Integer.toString(numberOfPENY));
-            buttonOfQUID.setText("Value: "+String.format("%.2f", valueOfQUID)+"  "+"Number: "+Integer.toString(numberOfQUID));
-            buttonOfSHIL.setText("Value: "+String.format("%.2f", valueOfSHIL)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+            buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
+            buttonOfPENY.setText("Value: "+String.format("%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY));
+            buttonOfQUID.setText("Value: "+String.format("%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID));
+            buttonOfSHIL.setText("Value: "+String.format("%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL));
 
             return null;
         }
