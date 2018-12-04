@@ -3,11 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbarl">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/MenuStyle">
+    </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 
     <Button
     android:id="@+id/button_dolr"
-    android:layout_width="290dp"
+    android:layout_width="match_parent"
     android:layout_height="60dp"
+        android:layout_below="@+id/toolbarl"
     android:layout_marginStart="20dp"
         android:layout_centerHorizontal="true"
     android:layout_marginTop="20dp"
@@ -15,7 +29,7 @@
     android:text="Value: 0.0   Number: 0" />
     <Button
         android:id="@+id/button_shil"
-        android:layout_width="290dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginStart="20dp"
         android:layout_centerHorizontal="true"
@@ -25,7 +39,7 @@
         android:text="Value: 0.0   Number: 0" />
     <Button
         android:id="@+id/button_peny"
-        android:layout_width="290dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_below="@+id/button_dolr"
         android:layout_centerHorizontal="true"
@@ -35,7 +49,7 @@
         android:text="Value: 0.0   Number: 0" />
     <Button
         android:id="@+id/button_quid"
-        android:layout_width="290dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginStart="20dp"
         android:layout_centerHorizontal="true"
@@ -46,72 +60,65 @@
 
     <Button
         android:id="@+id/button_gold"
-        android:layout_width="170dp"
-        android:layout_height="190dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         android:layout_below="@+id/button_shil"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/colorPrimary"
-        android:drawableTop="@drawable/splashiconsmall"
-        android:text="Gold&#10;value: 0.0" />
+        android:layout_marginTop="10dp"
+        android:drawableStart="@mipmap/splashiconbigger"
+        android:text="Gold   value: 0.0" />
 
     <ImageView
-        android:layout_width="180dp"
-        android:layout_height="190dp"
-        android:layout_toEndOf="@id/button_gold"
-        android:layout_below="@id/button_shil"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/button_gold"
+        android:layout_marginTop="25dp"
+
         android:background="@color/mapnoxGrayLight" />
     <TextView
         android:id="@+id/exchange_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/button_gold"
-        android:layout_below="@id/button_shil"
-        android:layout_marginTop="35dp"
-        android:layout_marginStart="50dp"
+        android:layout_below="@id/button_gold"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="45dp"
         android:text="Exchange Rates"
+        android:textSize="18dp"
         android:textStyle="bold"
         />
     <TextView
         android:id="@+id/name_dolr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/button_gold"
         android:layout_below="@id/exchange_rate"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="40dp"
         android:text="DOLR: "
         />
     <TextView
         android:id="@+id/name_peny"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/button_gold"
         android:layout_below="@id/name_dolr"
         android:layout_marginTop="5dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:text="PENY: "
         />
     <TextView
         android:id="@+id/name_quid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/button_gold"
         android:layout_below="@id/name_peny"
         android:layout_marginTop="5dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:text="QUID:  "
         />
     <TextView
         android:id="@+id/name_shil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/button_gold"
         android:layout_below="@id/name_quid"
         android:layout_marginTop="5dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:text="SHIL:  "
         />
     <TextView
@@ -120,7 +127,8 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/name_dolr"
         android:layout_below="@id/exchange_rate"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
         android:text="0.0"/>
     <TextView
         android:id="@+id/peny_rate"
@@ -129,6 +137,7 @@
         android:layout_toEndOf="@id/name_peny"
         android:layout_below="@id/dolr_rate"
         android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
         android:text="0.0"/>
     <TextView
         android:id="@+id/quid_rate"
@@ -137,6 +146,7 @@
         android:layout_toEndOf="@id/name_quid"
         android:layout_below="@id/peny_rate"
         android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
         android:text="0.0"/>
     <TextView
         android:id="@+id/shil_rate"
@@ -145,26 +155,27 @@
         android:layout_toEndOf="@id/name_shil"
         android:layout_below="@id/quid_rate"
         android:layout_marginTop="5dp"
-        android:layout_marginStart="2dp"
+        android:layout_marginStart="10dp"
         android:text="0.0"/>
     <TextView
         android:id="@+id/interest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/shil_rate"
-        android:layout_toEndOf="@id/button_gold"
+        android:layout_below="@id/button_gold"
+        android:layout_toEndOf="@id/exchange_rate"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="75dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="80dp"
+        android:textSize="18dp"
         android:text="Interest"/>
     <TextView
         android:id="@+id/interest_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/interest"
-        android:layout_toEndOf="@id/button_gold"
-        android:layout_marginTop="7dp"
-        android:layout_marginStart="90dp"
+        android:textSize="25dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="270dp"
         android:text="0.0"/>
 
 

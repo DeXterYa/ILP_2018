@@ -1,9 +1,6 @@
 package com.example.dexter.informatics_large_practicaltest;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,9 +18,7 @@ import com.example.dexter.informatics_large_practicaltest.Model.Coin;
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.Rate;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -41,8 +36,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class DolrActivity extends AppCompatActivity implements ActionMode.Callback{
-
+public class QuidActivity extends AppCompatActivity implements ActionMode.Callback{
 
     private ActionMode actionMode;
     private boolean isMultiSelect = false;
@@ -51,15 +45,14 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
     private CoinAdapter adapter;
     private FirebaseUser firebaseUser;
     private int count;
-    private Double rate_dolr;
+    private Double rate_quid;
 
     private Double Gold;
 
     private boolean ifaddgold;
+    private int numberInBank;
 
     private HashMap<String, Object> update;
-
-    private int numberInBank;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +61,10 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
         ifaddgold = true;
         count = 0;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        setContentView(R.layout.activity_dolr);
+
+        setContentView(R.layout.activity_quid);
+
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -78,12 +74,11 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("DOLR in wallet");
+        getSupportActionBar().setTitle("QUID in wallet");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
-        actionMode = startActionMode(DolrActivity.this);
+        actionMode = startActionMode(QuidActivity.this);
         actionMode.setTitle("Choose coins");
-
 
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -101,7 +96,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                     isMultiSelect = true;
 
                     if (actionMode ==null) {
-                        actionMode = startActionMode(DolrActivity.this);
+                        actionMode = startActionMode(QuidActivity.this);
                     }
 
                 }
@@ -118,7 +113,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     Rate rate = documentSnapshot.toObject(Rate.class);
-                    rate_dolr = rate.getDOLR();
+                    rate_quid = rate.getQUID();
                 }
             }
         });
@@ -141,9 +136,9 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                 }
             }
         });
-
-
     }
+
+
 
     private void multiSelect(int position) {
         Coin coin = adapter.getItem(position);
@@ -179,7 +174,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                     for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
                         Markersonmap markersonmap2 = d.toObject(Markersonmap.class);
                         if ((markersonmap2.getIsCollected_1() == 1)&&(markersonmap2.getIsStored() == 0)&& (markersonmap2.getIsInMarket() == 0)) {
-                            if(markersonmap2.getCurrency().equals("DOLR")) {
+                            if(markersonmap2.getCurrency().equals("QUID")) {
                                 count += 1;
                                 list.add(new Coin(d.getId(), markersonmap2.getValue(), count, ""));
                             }
@@ -212,25 +207,25 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
         switch (item.getItemId()) {
             case R.id.action_store:
                 if ((numberInBank < 25) && ((25-numberInBank)>=selectedIds.size())) {
-                    for (Coin coin_dolr : mcoin) {
-                        if (selectedIds.contains(coin_dolr.getId())) {
+                    for (Coin coin_quid : mcoin) {
+                        if (selectedIds.contains(coin_quid.getId())) {
                             DocumentReference documentReference88 = FirebaseFirestore.getInstance()
                                     .collection("User").document(firebaseUser.getUid());
+
                             documentReference88.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     User user = documentSnapshot.toObject(User.class);
-                                    Gold = user.getGOLD() + Double.parseDouble(coin_dolr.getValue()) * rate_dolr;
+                                    Gold = user.getGOLD() + Double.parseDouble(coin_quid.getValue()) * rate_quid;
                                     uploadgold();
                                 }
                             });
 
 
 
-
                             DocumentReference documentReference2 = FirebaseFirestore.getInstance()
                                     .collection("Icons").document(firebaseUser.getUid())
-                                    .collection("features").document(coin_dolr.getTitle());
+                                    .collection("features").document(coin_quid.getTitle());
                             HashMap<String, Object> update2 = new HashMap<>();
                             update2.put("isStored", 1);
                             documentReference2.update(update2);
@@ -238,14 +233,14 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                         }
 
                     }
+                    Intent intent3 = new Intent(QuidActivity.this, Activity_Two.class);
+                    startActivity(intent3);
                     finish();
-                    startActivity(getIntent());
                     return true;
-                } else {
-                    Toast.makeText(DolrActivity.this, "You cannot store those coins in bank",
+                }else {
+                    Toast.makeText(QuidActivity.this, "You cannot store those coins in bank",
                             Toast.LENGTH_SHORT).show();
                 }
-
             case R.id.action_market:
                 for (Coin coin_dolr : mcoin) {
                     if (selectedIds.contains(coin_dolr.getId())) {
@@ -257,10 +252,10 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                         documentReference3.update(update3);
                     }
                 }
-                Intent intent3 = new Intent(DolrActivity.this, Activity_Two.class);
-                startActivity(intent3);
                 finish();
+                startActivity(getIntent());
                 return true;
+
         }
         return false;
 
@@ -276,6 +271,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
         update.put("GOLD", Gold);
         documentReference99.update(update);
     }
+
 
 
 

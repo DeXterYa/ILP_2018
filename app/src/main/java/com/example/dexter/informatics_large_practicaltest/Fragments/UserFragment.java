@@ -103,7 +103,7 @@ public class UserFragment extends Fragment {
                         }
                     }
 
-                    userAdapter = new UserAdapter(getContext(), mUsers,false);
+                    userAdapter = new UserAdapter(getContext(), mUsers,false, true);
                     recyclerView.setAdapter(userAdapter);
                 }
             }
@@ -131,7 +131,7 @@ public class UserFragment extends Fragment {
                                 mUsers.add(user);
                             }
                         }
-                        userAdapter = new UserAdapter(getContext(), mUsers, false);
+                        userAdapter = new UserAdapter(getContext(), mUsers, false, true);
                         recyclerView.setAdapter(userAdapter);
                     }
                 }
@@ -143,32 +143,7 @@ public class UserFragment extends Fragment {
             });
 
 
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("User");
-//
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                mUsers.clear();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-//                    User user = snapshot.getValue(User.class);
-//
-//                    assert user != null;
-//                    assert firebaseUser != null;
-//                    if (!user.getId().equals(firebaseUser.getUid())) {
-//                        mUsers.add(user);
-//                    }
-//
-//                }
-//
-//                userAdapter = new UserAdapter(getContext(),mUsers);
-//                recyclerView.setAdapter(userAdapter);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+
 
 
 

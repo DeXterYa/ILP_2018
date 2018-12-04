@@ -11,9 +11,10 @@ public class Markersonmap {
     private String value;
     private int isCollected_1;
     private int isStored;
+    private int isInMarket;
 
 
-    public Markersonmap(String color, String currency, String id,  Double latitude, Double longitude, String symbol, String value, int isCollected_1, int isStored) {
+    public Markersonmap(String color, String currency, String id,  Double latitude, Double longitude, String symbol, String value, int isCollected_1, int isStored, int isInMarket) {
         this.color = color;
         this.currency = currency;
         this.id = id;
@@ -23,6 +24,7 @@ public class Markersonmap {
         this.value = value;
         this.isCollected_1 = isCollected_1;
         this.isStored = isStored;
+        this.isInMarket = isInMarket;
     }
 
     public Markersonmap() {
@@ -99,5 +101,13 @@ public class Markersonmap {
 
     public void setIsStored(int isStored) {
         this.isStored = isStored;
+    }
+
+    public int getIsInMarket() {
+        return isInMarket;
+    }
+
+    public void setIsInMarket(int isInMarket) {
+        this.isInMarket = isInMarket;
     }
 }

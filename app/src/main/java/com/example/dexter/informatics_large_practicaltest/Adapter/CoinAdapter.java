@@ -65,6 +65,7 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.MyViewHolder> 
 
     class MyViewHolder extends  RecyclerView.ViewHolder {
         TextView title;
+        TextView title2;
 
         FrameLayout rootView;
         MyViewHolder (View itemView) {

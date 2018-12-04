@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.dexter.informatics_large_practicaltest.MessageActivity;
 import com.example.dexter.informatics_large_practicaltest.Model.Chat;
+import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.R;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,13 +34,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context  mContext;
     private List<User> mUsers;
     private boolean ischat;
+    private boolean ifShown;
+    private Double valueOfDolr;
+    private Double valueOfPeny;
+    private Double valueOfQuid;
+    private Double valueOfShil;
+
 
     String theLastMessage;
 
-    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
+    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat, boolean ifShown) {
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
+        this.ifShown = ifShown;
     }
 
     @NonNull
@@ -91,7 +99,58 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             }
         });
 
+        CollectionReference collectionReference = FirebaseFirestore.getInstance()
+                .collection("Icons").document(user.getId())
+                .collection("features");
+        collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (ifShown) {
+                    if (queryDocumentSnapshots != null) {
+                        valueOfDolr = 0.0;
+                        valueOfPeny = 0.0;
+                        valueOfQuid = 0.0;
+                        valueOfShil = 0.0;
+                        for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                            Markersonmap markersonmap2 = d.toObject(Markersonmap.class);
+                            if ((markersonmap2.getIsCollected_1() == 1) && (markersonmap2.getIsStored() == 0) && (markersonmap2.getIsInMarket() == 1)) {
+                                switch (markersonmap2.getCurrency()) {
+                                    case "DOLR":
+                                        valueOfDolr += Double.parseDouble(markersonmap2.getValue());
+                                        break;
+                                    case "PENY":
+                                        valueOfPeny += Double.parseDouble(markersonmap2.getValue());
+                                        break;
+                                    case "QUID":
+                                        valueOfQuid += Double.parseDouble(markersonmap2.getValue());
+                                        break;
+                                    case "SHIL":
+                                        valueOfShil += Double.parseDouble(markersonmap2.getValue());
+                                        break;
+                                }
+
+                            }
+                        }
+                        viewHolder.dolrimg.setVisibility(View.VISIBLE);
+                        viewHolder.penyimg.setVisibility(View.VISIBLE);
+                        viewHolder.quidimg.setVisibility(View.VISIBLE);
+                        viewHolder.shilimg.setVisibility(View.VISIBLE);
+                        viewHolder.dolrvalue.setVisibility(View.VISIBLE);
+                        viewHolder.penyvalue.setVisibility(View.VISIBLE);
+                        viewHolder.quidvalue.setVisibility(View.VISIBLE);
+                        viewHolder.shilvalue.setVisibility(View.VISIBLE);
+                        viewHolder.dolrvalue.setText(String.format("%.1f", valueOfDolr));
+                        viewHolder.penyvalue.setText(String.format("%.1f", valueOfPeny));
+                        viewHolder.quidvalue.setText(String.format("%.1f", valueOfQuid));
+                        viewHolder.shilvalue.setText(String.format("%.1f", valueOfShil));
+
+                    }
+                }
+            }
+        });
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -105,6 +164,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private  ImageView img_on;
         private  ImageView img_off;
         private TextView last_msg;
+        private TextView dolrvalue;
+        private TextView penyvalue;
+        private TextView quidvalue;
+        private TextView shilvalue;
+        private ImageView dolrimg;
+        private ImageView penyimg;
+        private ImageView quidimg;
+        private ImageView shilimg;
 
 
 
@@ -118,6 +185,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
+            dolrvalue = itemView.findViewById(R.id.dolrvalue);
+            penyvalue = itemView.findViewById(R.id.penyvalue);
+            quidvalue = itemView.findViewById(R.id.quidvalue);
+            shilvalue = itemView.findViewById(R.id.shilvalue);
+            dolrimg = itemView.findViewById(R.id.dolrimage);
+            penyimg = itemView.findViewById(R.id.penyimage);
+            quidimg = itemView.findViewById(R.id.quidimage);
+            shilimg = itemView.findViewById(R.id.shilimage);
 
         }
     }

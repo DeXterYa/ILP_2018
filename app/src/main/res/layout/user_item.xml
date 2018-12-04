@@ -62,7 +62,80 @@
         android:id="@+id/last_msg"
         android:textColor="@color/Black"
         android:layout_marginStart="20dp"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        />
+    <ImageView
+        android:id="@+id/dolrimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/dolrsmall"
+        android:layout_toStartOf="@id/dolrvalue"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="3dp"
+        android:visibility="gone"
+        />
+    <TextView
+        android:id="@+id/dolrvalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/quidimage"
+        android:layout_marginEnd="15dp"
+        android:visibility="gone"
+        android:text="0.0"/>
+
+    <ImageView
+        android:id="@+id/penyimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/penysmall"
+        android:layout_toStartOf="@id/penyvalue"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="29dp"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/penyvalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/shilimage"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="27dp"
+        android:text="0.0"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/quidimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/quidsmall"
+        android:layout_toStartOf="@id/quidvalue"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="3dp"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/quidvalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:text="0.0"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/shilimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/shilsmall"
+        android:layout_toStartOf="@+id/shilvalue"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="29dp"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/shilvalue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="27dp"
+        android:text="0.0"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"/>
 
 
 </RelativeLayout>

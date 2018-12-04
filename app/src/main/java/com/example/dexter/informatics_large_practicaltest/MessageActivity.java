@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -70,6 +72,7 @@ public class MessageActivity extends AppCompatActivity {
 
     MessageAdapter messageAdapter;
     List<Chat> mChat;
+    private String userid;
 
     RecyclerView recyclerView;
     @ServerTimestamp  public Date time;
@@ -133,7 +136,7 @@ public class MessageActivity extends AppCompatActivity {
 
 
         intent = getIntent();
-        String userid = intent.getStringExtra("userid");
+        userid = intent.getStringExtra("userid");
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,27 +174,7 @@ public class MessageActivity extends AppCompatActivity {
 
         seenMessage(userid);
 
-//        reference = FirebaseDatabase.getInstance().getReference("User").child(userid);
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                username.setText(user.getUsername());
-//                if (user.getImageURL().equals("default")){
-//                    profile_image.setImageResource(R.mipmap.ic_launcher);
-//                } else{
-//                    Glide.with(MessageActivity.this).load(user.getImageURL()).into (profile_image);
-//
-//                }
-//
-//                readMessages(fUser.getUid(), userid, user.getImageURL());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+
     }
 
 
@@ -275,21 +258,7 @@ public class MessageActivity extends AppCompatActivity {
         chatRef2.set(hashMap2);
 
 
-//        HashMap<String, Object> hashMap = new HashMap<>();
-//        hashMap.put("sender", sender);
-//        hashMap.put("receiver", receiver);
-//        hashMap.put("message", message);
-//        collectionReference.add(hashMap);
 
-
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-//
-//        HashMap<String, Object> hashMap = new HashMap<>();
-//        hashMap.put("sender", sender);
-//        hashMap.put("receiver", receiver);
-//        hashMap.put("message", message);
-//
-//        reference.child("Chats").push().setValue(hashMap);
     }
 
     private void readMessages (String myid, String userid, String imageURL) {
@@ -337,30 +306,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-//        reference = FirebaseDatabase.getInstance().getReference("Chats");
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                mChat.clear();
-//                for (DataSnapshot snapshot :dataSnapshot.getChildren()) {
-//                    Chat chat = snapshot.getValue(Chat.class);
-//                    if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-//                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-//                        mChat.add(chat);
-//
-//                    }
-//
-//                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageURL);
-//                    recyclerView.setAdapter(messageAdapter);
-//                    recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+
     }
 
 
@@ -387,5 +333,19 @@ public class MessageActivity extends AppCompatActivity {
         super.onPause();
         status("offline");
         is_seen = 1;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_marketdark, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = new Intent(MessageActivity.this, UsermarketActivity.class);
+        intent.putExtra("userid",userid);
+        startActivity(intent);
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -331,7 +331,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                         if (queryDocumentSnapshots != null) {
                             for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
                                 Markersonmap markersonmap1 = d.toObject(Markersonmap.class);
-                                if ((markersonmap1.getIsCollected_1() == 1)&&(markersonmap1.getIsStored() == 0)) {
+                                if ((markersonmap1.getIsCollected_1() == 1)&&(markersonmap1.getIsStored() == 0)&&(markersonmap1.getIsInMarket() == 0)) {
                                     switch (markersonmap1.getCurrency()) {
                                         case "DOLR":
                                             floatValueOfDolr += Double.parseDouble(markersonmap1.getValue());
@@ -364,28 +364,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private class ChangeCoinsValue extends AsyncTask<Void,Void,Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            DocumentReference coinsValue = FirebaseFirestore.getInstance()
-                    .collection("User").document(firebaseUser.getUid());
-            coinsValue.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                    if (documentSnapshot != null) {
-                        User user = documentSnapshot.toObject(User.class);
-                        valueOfDolr.setText(String.format("%.2f", user.getDOLR()));
-                        valueOfPeny.setText(String.format("%.2f", user.getPENY()));
-                        valueOfQuid.setText(String.format("%.2f", user.getQUID()));
-                        valueOfShil.setText(String.format("%.2f", user.getSHIL()));
-                    }
-                }
-            });
 
-
-            return null;
-        }
-    }
 
 
 
@@ -488,6 +467,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                         hashMap_features.put("latitude", latitude);
                         hashMap_features.put("isCollected_1", 0);
                         hashMap_features.put("isStored", 0);
+                        hashMap_features.put("isInMarket", 0);
                         properties.set(hashMap_features);
 
         }
@@ -551,7 +531,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                         if (queryDocumentSnapshots != null) {
                             for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
                                 Markersonmap markersonmap = d.toObject(Markersonmap.class);
-                                if ((markersonmap.getIsCollected_1() == 0) && (markersonmap.getIsStored() == 0)) {
+                                if ((markersonmap.getIsCollected_1() == 0) && (markersonmap.getIsStored() == 0) && (markersonmap.getIsInMarket() == 0)) {
                                     switch (markersonmap.getCurrency()) {
                                         case "SHIL":
 //                                    Double[] coinLoc_1 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
@@ -808,66 +788,6 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    private class Delete extends AsyncTask<Void,Void,Void>{
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            DocumentReference docRe = FirebaseFirestore.getInstance()
-                    .collection("User").document(firebaseUser.getUid());
-            docRe.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                    User user = documentSnapshot.toObject(User.class);
-                    while (namesOfCoins.size() != 0) {
-                        String nameInDelete = namesOfCoins.poll();
-                        Double valueInDelete = valuesOfCoins.poll();
-                        switch (nameInDelete) {
-                            case "SHIL":
-                                Double newVal_s = user.getSHIL() + valueInDelete;
-                                HashMap<String, Object> updv_s = new HashMap<>();
-                                updv_s.put("SHIL", newVal_s);
-                                docRe.update(updv_s);
-                                updv_s.clear();
-                                break;
-
-                            case "DOLR":
-                                Double newVal_d = user.getDOLR() + valueInDelete;
-                                HashMap<String, Object> updv_d = new HashMap<>();
-                                updv_d.put("DOLR", newVal_d);
-                                docRe.update(updv_d);
-                                updv_d.clear();
-                                break;
-
-                            case "QUID":
-                                Double newVal_q = user.getQUID() + valueInDelete;
-                                HashMap<String, Object> updv_q = new HashMap<>();
-                                updv_q.put("QUID", newVal_q);
-                                docRe.update(updv_q);
-                                updv_q.clear();
-                                break;
-
-                            case "PENY":
-                                Double newVal_p = user.getPENY() + valueInDelete;
-                                HashMap<String, Object> updv_p = new HashMap<>();
-                                updv_p.put("PENY", newVal_p);
-                                docRe.update(updv_p);
-                                updv_p.clear();
-                                break;
-
-                            default:
-                                break;
-
-
-                        }
-                    }
-
-                }
-            });
-
-
-            return null;
-        }
-    }
 
 
     @Override

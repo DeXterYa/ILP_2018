@@ -47,7 +47,12 @@
         <activity
             android:name=".ResetPasswordActivity"
             android:parentActivityName=".LoginActivity" />
-        <activity android:name=".DolrActivity"></activity>
+        <activity android:name=".DolrActivity" />
+        <activity android:name=".PenyActivity" />
+        <activity android:name=".QuidActivity" />
+        <activity android:name=".ShilActivity" />
+        <activity android:name=".MarketActivity" />
+        <activity android:name=".UsermarketActivity"></activity>
     </application>
 
 </manifest>
