@@ -309,8 +309,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
-//        ChangeCoinsValue2 changeCoinsValue = new ChangeCoinsValue2();
-//        changeCoinsValue.execute();
+
 
     }
 

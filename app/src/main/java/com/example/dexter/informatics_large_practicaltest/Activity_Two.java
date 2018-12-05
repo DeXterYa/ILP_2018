@@ -296,7 +296,7 @@ public class Activity_Two extends AppCompatActivity {
 
             DocumentReference documentReference = FirebaseFirestore.getInstance()
                     .collection("User").document(firebaseUser.getUid());
-            documentReference2.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
@@ -304,7 +304,7 @@ public class Activity_Two extends AppCompatActivity {
                         gold = user.getGOLD();
                         Double value = gold/2000;
                         level =  value.intValue()*0.001 ;
-                        rateOfInterest.setText(String.format("%.0f", gold/2000));
+                        rateOfInterest.setText(String.format("%.3f", level));
                     }
                 }
             });
