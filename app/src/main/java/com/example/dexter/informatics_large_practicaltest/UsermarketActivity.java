@@ -177,7 +177,7 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
     }
 
     private List<Coin> getList(){
-        count = 0;
+
         List<Coin> list = new ArrayList<>();
         CollectionReference collectionReference = FirebaseFirestore.getInstance()
                 .collection("Icons").document(userid)
@@ -186,7 +186,8 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (queryDocumentSnapshots != null) {
-
+                    count = 0;
+                    list.clear();
                     for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
                         Markersonmap markersonmap2 = d.toObject(Markersonmap.class);
                         if ((markersonmap2.getIsCollected_1() == 1)&&(markersonmap2.getIsStored() == 0)&& (markersonmap2.getIsInMarket() == 1)&&(markersonmap2.getCurrency().equals("DOLR"))) {
@@ -249,24 +250,21 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
                 for (Coin coin_market : mcoin) {
                     if (GoldOfBuyer > 0) {
                         if (selectedIds.contains(coin_market.getId())) {
-                            valueOfDolr = 0.0;
-                            valueOfPeny = 0.0;
-                            valueOfQuid = 0.0;
-                            valueOfShil = 0.0;
 
-                            DocumentReference documentReference2 = FirebaseFirestore.getInstance()
-                                    .collection("Icons").document(userid)
-                                    .collection("features").document(coin_market.getTitle2());
-                            HashMap<String, Object> update2 = new HashMap<>();
-                            update2.put("isInMarket", 0);
-                            update2.put("isStored", 1);
-                            documentReference2.update(update2);
 
                             DocumentReference documentReference = FirebaseFirestore.getInstance()
                                     .collection("User").document(firebaseUser.getUid());
                             documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    valueOfDolr = 0.0;
+                                    valueOfPeny = 0.0;
+                                    valueOfQuid = 0.0;
+                                    valueOfShil = 0.0;
+                                    valueOfDolrChange = 0.0;
+                                    valueOfPenyChange = 0.0;
+                                    valueOfQuidChange = 0.0;
+                                    valueOfShilChange = 0.0;
                                     User user = documentSnapshot.toObject(User.class);
                                     switch (coin_market.getTitle()) {
                                         case "DOLR":
@@ -292,8 +290,20 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
                                     }
 
                                     uploadChange();
+
+                                    DocumentReference documentReference2 = FirebaseFirestore.getInstance()
+                                            .collection("Icons").document(userid)
+                                            .collection("features").document(coin_market.getTitle2());
+                                    HashMap<String, Object> update2 = new HashMap<>();
+                                    update2.put("isInMarket", 0);
+                                    update2.put("isStored", 1);
+                                    documentReference2.update(update2);
                                 }
                             });
+
+
+
+
                         }
                     }
                 }

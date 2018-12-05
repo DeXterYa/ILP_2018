@@ -17,9 +17,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,11 +30,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import javax.annotation.Nullable;
 
@@ -47,6 +52,29 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference reference;
     private DocumentReference documentReference;
+
+
+    Button dolr_out;
+    Button peny_out;
+    Button quid_out;
+    Button shil_out;
+
+    Button collected;
+    Button inMarket;
+
+    TextView level;
+
+    private Double gold;
+
+    int numberOfDolr;
+    int numberOfPeny;
+    int numberOfQuid;
+    int numberOfShil;
+
+    int numberOfCollected;
+    int numberOfInMarket;
+
+
 
 
 
@@ -130,6 +158,83 @@ public class MainActivity extends AppCompatActivity {
 
             }
             return false;
+        });
+
+
+
+        dolr_out = findViewById(R.id.dolr_out);
+        peny_out = findViewById(R.id.peny_out);
+        quid_out = findViewById(R.id.quid_out);
+        shil_out = findViewById(R.id.shil_out);
+        collected = findViewById(R.id.button_collected);
+        inMarket = findViewById(R.id.button_inmarket);
+
+        level = findViewById(R.id.level);
+
+        DocumentReference documentReference2 = FirebaseFirestore.getInstance()
+                .collection("User").document(firebaseUser.getUid());
+        documentReference2.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                if (documentSnapshot != null) {
+                    User user = documentSnapshot.toObject(User.class);
+                    gold = user.getGOLD();
+                    level.setText("Level  " + String.format("%.0f", gold/2000));
+                }
+            }
+        });
+
+        CollectionReference collectionReference = FirebaseFirestore.getInstance()
+                .collection("Icons").document(firebaseUser.getUid())
+                .collection("features");
+        collectionReference.addSnapshotListener(MainActivity.this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    numberOfDolr = 0;
+                    numberOfPeny = 0;
+                    numberOfQuid = 0;
+                    numberOfShil = 0;
+                    numberOfCollected = 0;
+                    numberOfInMarket = 0;
+                    for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
+                        Markersonmap markersonmap1 = d.toObject(Markersonmap.class);
+                        if ((markersonmap1.getIsCollected_1() == 0)&&(markersonmap1.getIsStored() == 0)&& (markersonmap1.getIsInMarket() == 0)) {
+                            switch (markersonmap1.getCurrency()) {
+                                case "DOLR":
+                                    numberOfDolr += 1;
+                                    break;
+                                case "PENY":
+                                    numberOfPeny += 1;
+                                    break;
+                                case "QUID":
+                                    numberOfQuid += 1;
+                                    break;
+                                case "SHIL":
+                                    numberOfShil += 1;
+                                    break;
+                            }
+                        }
+
+                        if ((markersonmap1.getIsCollected_1() == 1)&&(markersonmap1.getIsStored() == 0)&& (markersonmap1.getIsInMarket() == 0)) {
+                            numberOfCollected += 1;
+                        }
+
+                        if ((markersonmap1.getIsCollected_1() == 1)&&(markersonmap1.getIsStored() == 0)&& (markersonmap1.getIsInMarket() == 1)) {
+                            numberOfInMarket += 1;
+                        }
+                    }
+
+                    dolr_out.setText("DOLR             NUMBER: " + Integer.toString(numberOfDolr));
+                    peny_out.setText("PENY             NUMBER: "+Integer.toString(numberOfPeny));
+                    quid_out.setText("QUID             NUMBER: "+Integer.toString(numberOfQuid));
+                    shil_out.setText("SHIL             NUMBER: "+Integer.toString(numberOfShil));
+                    collected.setText("Collected: "+Integer.toString(numberOfCollected));
+                    inMarket.setText("In market: "+Integer.toString(numberOfInMarket));
+
+
+                }
+            }
         });
     }
 

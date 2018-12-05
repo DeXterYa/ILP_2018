@@ -125,7 +125,8 @@ public class MarketActivity extends AppCompatActivity implements ActionMode.Call
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (queryDocumentSnapshots != null) {
-
+                    list.clear();
+                    count = 0;
                     for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
                         Markersonmap markersonmap2 = d.toObject(Markersonmap.class);
                         if ((markersonmap2.getIsCollected_1() == 1)&&(markersonmap2.getIsStored() == 0)&& (markersonmap2.getIsInMarket() == 1)&&(markersonmap2.getCurrency().equals("DOLR"))) {

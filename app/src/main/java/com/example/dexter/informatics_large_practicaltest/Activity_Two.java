@@ -61,6 +61,9 @@ public class Activity_Two extends AppCompatActivity {
     Double floatValueOfShil;
     private Toolbar mTopToolbar;
 
+    Double gold;
+    Double level;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -291,6 +294,21 @@ public class Activity_Two extends AppCompatActivity {
                 }
             });
 
+            DocumentReference documentReference = FirebaseFirestore.getInstance()
+                    .collection("User").document(firebaseUser.getUid());
+            documentReference2.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
+                        User user = documentSnapshot.toObject(User.class);
+                        gold = user.getGOLD();
+                        Double value = gold/2000;
+                        level =  value.intValue()*0.001 ;
+                        rateOfInterest.setText(String.format("%.0f", gold/2000));
+                    }
+                }
+            });
+
 
 
             buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
@@ -323,8 +341,17 @@ public class Activity_Two extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = new Intent(Activity_Two.this, MarketActivity.class);
-        startActivity(intent);
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_market2:
+                Intent intent = new Intent(Activity_Two.this, MarketActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_bag:
+                Intent intent2 = new Intent(Activity_Two.this, BagActivity.class);
+                startActivity(intent2);
+                return true;
+        }
+        return false;
     }
 }

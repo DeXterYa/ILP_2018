@@ -7,5 +7,10 @@
         android:title="Market"
         android:icon="@drawable/shop"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_bag"
+        android:title="Bag"
+        android:icon="@drawable/shoppingbag"
+        app:showAsAction="always" />
 
 </menu>

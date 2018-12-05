@@ -6,7 +6,8 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbarl">
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -33,11 +34,100 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/toolbarl"
+        android:background="@color/mapnoxGrayLight"/>
+    <TextView
+        android:id="@+id/level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbarl"
+        android:layout_centerHorizontal="true"
+        android:text="Level  0"
+        android:layout_marginTop="9dp"
+        android:textSize="40sp"
+        android:padding="5dp"
+        android:textStyle="italic"/>
+    <TextView
+        android:id="@+id/coins_text1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Coins still out there"
+        android:layout_below="@+id/background"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:padding="10dp"/>
+    <Button
+        android:id="@+id/dolr_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/coins_text1"
+        android:drawableLeft="@mipmap/dolr"
+        android:text="DOLR             NUMBER: 0"/>
+    <Button
+        android:id="@+id/peny_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dolr_out"
+        android:drawableLeft="@mipmap/peny"
+        android:text="PENY             NUMBER: 0"/>
 
+    <Button
+        android:id="@+id/quid_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/peny_out"
+        android:drawableLeft="@mipmap/quid"
+        android:text="QUID             NUMBER: 0"/>
+
+    <Button
+        android:id="@+id/shil_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/quid_out"
+        android:drawableLeft="@mipmap/shil"
+        android:text="SHIL             NUMBER: 0"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/shil_out"
+        android:layout_above="@+id/bottom_navigation">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/button_collected"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:padding="20sp"
+        android:text="Collected: 0"
+        android:drawableTop="@drawable/wallet"
+        android:background="#9809"
+        />
+        <Button
+            android:id="@+id/button_inmarket"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:padding="20sp"
+            android:layout_marginStart="10dp"
+            android:background="#599786"
+            android:drawableTop="@drawable/shop"
+            android:text="In market: 0"/>
+
+    </LinearLayout>
+    </RelativeLayout>
+
+
+
+
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
@@ -46,7 +136,7 @@
             app:itemBackground="@color/mapboxWhite"
             app:menu="@menu/navigation">
         </android.support.design.widget.BottomNavigationView>
-    </RelativeLayout>
+
 
 
 </RelativeLayout>

@@ -52,7 +52,12 @@
         <activity android:name=".QuidActivity" />
         <activity android:name=".ShilActivity" />
         <activity android:name=".MarketActivity" />
-        <activity android:name=".UsermarketActivity"></activity>
+        <activity android:name=".UsermarketActivity" />
+        <activity android:name=".BagActivity" />
+        <activity
+            android:name=".ConversionActivity"
+            android:label="@string/title_activity_conversion"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

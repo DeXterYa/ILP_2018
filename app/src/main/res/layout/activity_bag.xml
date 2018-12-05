@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BagActivity">
+
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbarl">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/MenuStyle">
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+
+    <ImageView
+        android:id="@+id/first_image"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/toolbarl"
+        android:layout_marginTop="30dp"
+        android:background="@color/mapnoxGrayLight"/>
+    <ImageView
+        android:id="@+id/dolr_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/dolr"
+        android:layout_below="@id/toolbarl"
+        android:layout_marginTop="45dp"
+        android:layout_marginStart="20dp" />
+    <TextView
+        android:id="@+id/dolr_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/dolr_image"
+        android:layout_below="@id/toolbarl"
+        android:layout_marginTop="44dp"
+        android:layout_marginStart="40dp"
+        android:text="DOLR    Value: 0.0"
+        android:textSize="24sp"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/first_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbarl"
+        android:layout_marginTop="80dp"
+        android:layout_alignParentEnd="true"
+        android:text="convert"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/mapboxWhite"/>
+
+
+
+    <ImageView
+        android:id="@+id/second_image"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/first_image"
+        android:background="@color/mapnoxGrayLight"/>
+    <ImageView
+        android:id="@+id/peny_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/peny"
+        android:layout_below="@id/first_image"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="20dp" />
+    <TextView
+        android:id="@+id/peny_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/peny_image"
+        android:layout_below="@id/first_image"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="40dp"
+        android:text="PENY    Value: 0.0   "
+        android:textSize="24sp"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/second_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/first_image"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/mapboxWhite"
+        android:text="convert"/>
+
+
+    <ImageView
+        android:id="@+id/third_image"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/second_image"
+        android:background="@color/mapnoxGrayLight"/>
+    <ImageView
+        android:id="@+id/quid_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/quid"
+        android:layout_below="@id/second_image"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="20dp" />
+    <TextView
+        android:id="@+id/quid_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/quid_image"
+        android:layout_below="@id/second_image"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="40dp"
+        android:text="QUID    Value: 0.0   "
+        android:textSize="24sp"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/third_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/second_image"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/mapboxWhite"
+        android:text="convert"/>
+
+
+    <ImageView
+        android:id="@+id/fourth_image"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/third_image"
+        android:background="@color/mapnoxGrayLight"/>
+    <ImageView
+        android:id="@+id/shil_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/shil"
+        android:layout_below="@id/third_image"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="20dp" />
+    <TextView
+        android:id="@+id/shil_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/shil_image"
+        android:layout_below="@id/third_image"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="40dp"
+        android:text="PENY    Value: 0.0   "
+        android:textSize="24sp"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/fourth_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/third_image"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/mapboxWhite"
+        android:text="convert"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/first_button"
+        android:background="@android:color/black"
+       />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/second_button"
+        android:background="@android:color/black"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/third_button"
+        android:background="@android:color/black"
+        />
+
+
+
+</RelativeLayout>

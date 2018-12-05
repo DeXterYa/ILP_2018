@@ -9,8 +9,12 @@
         <item name="android:windowActivityTransitions"></item>
     </style>
 
-    <style name="MenuStyle" parent = "Theme.AppCompat.Light">
-        <item name = "android:background">@android:color/white</item>
+    <style name="MenuStyle" parent="Theme.AppCompat.Light">
+        <item name="android:background">@android:color/white</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
