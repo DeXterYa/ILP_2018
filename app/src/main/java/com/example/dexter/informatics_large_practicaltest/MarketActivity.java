@@ -1,6 +1,5 @@
 package com.example.dexter.informatics_large_practicaltest;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.example.dexter.informatics_large_practicaltest.Adapter.CoinAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Coin;
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
@@ -55,7 +53,7 @@ public class MarketActivity extends AppCompatActivity implements ActionMode.Call
 
         count = 0;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView = findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -63,11 +61,15 @@ public class MarketActivity extends AppCompatActivity implements ActionMode.Call
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Market");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Market");
+        }
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
         actionMode = startActionMode(MarketActivity.this);
-        actionMode.setTitle("Choose coins");
+        if (actionMode != null) {
+            actionMode.setTitle("Choose coins");
+        }
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -206,7 +208,7 @@ public class MarketActivity extends AppCompatActivity implements ActionMode.Call
         actionMode = null;
         isMultiSelect = false;
         selectedIds = new ArrayList<>();
-        adapter.setSelectedIds(new ArrayList<Integer>());
+        adapter.setSelectedIds(new ArrayList<>());
     }
 
 

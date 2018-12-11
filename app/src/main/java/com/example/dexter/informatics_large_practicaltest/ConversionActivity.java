@@ -3,14 +3,11 @@ package com.example.dexter.informatics_large_practicaltest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import com.example.dexter.informatics_large_practicaltest.Adapter.RadioUserAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Coin;
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
@@ -27,7 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,14 +34,14 @@ public class ConversionActivity extends AppCompatActivity {
 
     Intent intent;
     String currency;
-    private RecyclerView offerRecyclerView;
+    RecyclerView offerRecyclerView;
     int count;
     private FirebaseUser firebaseUser;
 
     Coin selectedCoin;
 
 
-    private List<Coin> mcoin;
+    List<Coin> mcoin;
 
     private Double rateDOLR;
     private Double ratePENY;
@@ -62,6 +58,7 @@ public class ConversionActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        // Check the currency needed to convert
         intent = getIntent();
         currency = intent.getStringExtra("currency");
 
@@ -78,22 +75,19 @@ public class ConversionActivity extends AppCompatActivity {
 
 
 
-//        DividerItemDecoration dividerItemDecoration =
-//                new DividerItemDecoration(offerRecyclerView.getContext(),
-//                        recyclerLayoutManager.getOrientation());
-//        offerRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(currency + " in your wallet");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(currency + " in your wallet");
+            toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        toolbar.setNavigationOnClickListener((View v) -> {
                 onBackPressed();
-            }
         });
 
         DocumentReference documentReference1 = FirebaseFirestore.getInstance()
@@ -104,10 +98,12 @@ public class ConversionActivity extends AppCompatActivity {
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     Rate rate = documentSnapshot.toObject(Rate.class);
-                    rateDOLR = rate.getDOLR();
-                    ratePENY = rate.getPENY();
-                    rateQUID = rate.getQUID();
-                    rateSHIL = rate.getSHIL();
+                    if (rate != null) {
+                        rateDOLR = rate.getDOLR();
+                        ratePENY = rate.getPENY();
+                        rateQUID = rate.getQUID();
+                        rateSHIL = rate.getSHIL();
+                    }
                 }
             }
         });
@@ -119,74 +115,75 @@ public class ConversionActivity extends AppCompatActivity {
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     User user = documentSnapshot.toObject(User.class);
-                    gold = user.getGOLD();
+                    if (user != null) {
+                        gold = user.getGOLD();
+                    }
                 }
             }
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener((View v) ->  {
                 if (selectedCoin != null) {
-
-                    DocumentReference documentReference = FirebaseFirestore.getInstance()
+                    DocumentReference documentReference2 = FirebaseFirestore.getInstance()
                             .collection("User").document(firebaseUser.getUid());
-                    documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    documentReference2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if (documentSnapshot != null) {
                                 User user = documentSnapshot.toObject(User.class);
-                                switch (currency) {
-                                    case "DOLR":
-                                        value = 0.0;
-                                        value = user.getDOLR() + Double.parseDouble(selectedCoin.getValue());
-                                        value = value * rateDOLR;
-                                        HashMap<String, Object> update1 = new HashMap<>();
-                                        update1.put("DOLR", 0.0);
-                                        update1.put("GOLD", (gold + value));
-                                        documentReference.update(update1);
-                                        break;
+                                if (user != null) {
+                                    switch (currency) {
+                                        case "DOLR":
+                                            value = 0.0;
+                                            // Calculate the increasing value of gold
+                                            value = user.getDOLR() + Double.parseDouble(selectedCoin.getValue());
+                                            value = value * rateDOLR;
+                                            HashMap<String, Object> update1 = new HashMap<>();
+                                            update1.put("DOLR", 0.0);
+                                            update1.put("GOLD", (gold + value));
+                                            documentReference2.update(update1);
+                                            break;
 
-                                    case "PENY":
-                                        value = 0.0;
-                                        value = user.getPENY() + Double.parseDouble(selectedCoin.getValue());
-                                        value = value * ratePENY;
-                                        HashMap<String, Object> update2 = new HashMap<>();
-                                        update2.put("PENY", 0.0);
-                                        update2.put("GOLD", (gold + value));
-                                        documentReference.update(update2);
-                                        break;
+                                        case "PENY":
+                                            value = 0.0;
+                                            value = user.getPENY() + Double.parseDouble(selectedCoin.getValue());
+                                            value = value * ratePENY;
+                                            HashMap<String, Object> update2 = new HashMap<>();
+                                            update2.put("PENY", 0.0);
+                                            update2.put("GOLD", (gold + value));
+                                            documentReference2.update(update2);
+                                            break;
 
-                                    case "QUID":
-                                        value = 0.0;
-                                        value = user.getQUID() + Double.parseDouble(selectedCoin.getValue());
-                                        value = value * rateQUID;
-                                        HashMap<String, Object> update3 = new HashMap<>();
-                                        update3.put("QUID", 0.0);
-                                        update3.put("GOLD", (gold + value));
-                                        documentReference.update(update3);
-                                        break;
+                                        case "QUID":
+                                            value = 0.0;
+                                            value = user.getQUID() + Double.parseDouble(selectedCoin.getValue());
+                                            value = value * rateQUID;
+                                            HashMap<String, Object> update3 = new HashMap<>();
+                                            update3.put("QUID", 0.0);
+                                            update3.put("GOLD", (gold + value));
+                                            documentReference2.update(update3);
+                                            break;
 
-                                    case "SHIL":
-                                        value = 0.0;
-                                        value = user.getSHIL() + Double.parseDouble(selectedCoin.getValue());
-                                        value = value * rateSHIL;
-                                        HashMap<String, Object> update4 = new HashMap<>();
-                                        update4.put("SHIL", 0.0);
-                                        update4.put("GOLD", (gold + value));
-                                        documentReference.update(update4);
-                                        break;
+                                        case "SHIL":
+                                            value = 0.0;
+                                            value = user.getSHIL() + Double.parseDouble(selectedCoin.getValue());
+                                            value = value * rateSHIL;
+                                            HashMap<String, Object> update4 = new HashMap<>();
+                                            update4.put("SHIL", 0.0);
+                                            update4.put("GOLD", (gold + value));
+                                            documentReference2.update(update4);
+                                            break;
+                                    }
                                 }
 
-                                DocumentReference documentReference2 = FirebaseFirestore.getInstance()
+                                DocumentReference documentReference3 = FirebaseFirestore.getInstance()
                                         .collection("Icons").document(firebaseUser.getUid())
                                         .collection("features").document(selectedCoin.getTitle());
                                 HashMap<String, Object> update = new HashMap<>();
                                 update.put("isStored", 1);
-                                documentReference2.update(update);
+                                documentReference3.update(update);
 
 
                             }
@@ -195,7 +192,7 @@ public class ConversionActivity extends AppCompatActivity {
                     finish();
                     startActivity(getIntent());
                 }
-            }
+
         });
 
 

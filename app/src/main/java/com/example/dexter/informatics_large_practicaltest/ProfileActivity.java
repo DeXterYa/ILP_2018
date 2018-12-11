@@ -16,18 +16,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -71,14 +66,14 @@ public class ProfileActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Profile");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Profile");
+        }
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        toolbar.setNavigationOnClickListener((View v) -> {
                 onBackPressed();
-            }
         });
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -86,13 +81,17 @@ public class ProfileActivity extends AppCompatActivity {
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                User user = documentSnapshot.toObject(User.class);
-                username.setText(user.getUsername());
-                if (user.getImageURL().equals("default")) {
-                    image_profile.setImageResource(R.mipmap.ic_launcher);
-                } else {
-                    Glide.with(ProfileActivity.this).load(user.getImageURL()).into(image_profile);
-                }
+               if (documentSnapshot != null) {
+                   User user = documentSnapshot.toObject(User.class);
+                   if (user != null) {
+                       username.setText(user.getUsername());
+                       if (user.getImageURL().equals("default")) {
+                           image_profile.setImageResource(R.mipmap.ic_launcher);
+                       } else {
+                           Glide.with(ProfileActivity.this).load(user.getImageURL()).into(image_profile);
+                       }
+                   }
+               }
             }
         });
 
@@ -100,31 +99,9 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
-//        reference = FirebaseDatabase.getInstance().getReference("User").child(fuser.getUid());
-//
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                username.setText(user.getUsername());
-//                if (user.getImageURL().equals("default")) {
-//                    image_profile.setImageResource(R.mipmap.ic_launcher);
-//                } else {
-//                    Glide.with(ProfileActivity.this).load(user.getImageURL()).into(image_profile);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
-        image_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        image_profile.setOnClickListener((View v) -> {
                 openImage();
-            }
         });
     }
 
@@ -165,20 +142,18 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
-                        String mUri = downloadUri.toString();
+                        if (downloadUri != null) {
+                            String mUri = downloadUri.toString();
 
 
-                        documentReference = FirebaseFirestore.getInstance().collection("User").document(fuser.getUid());
-                        HashMap<String, Object> map = new HashMap<>();
-                        map.put("imageURL", mUri);
-                        documentReference.update(map);
+                            documentReference = FirebaseFirestore.getInstance().collection("User").document(fuser.getUid());
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("imageURL", mUri);
+                            documentReference.update(map);
 
-//                        reference = FirebaseDatabase.getInstance().getReference("User").child(fuser.getUid());
-//                        HashMap<String, Object> map = new HashMap<>();
-//                        map.put("imageURL", mUri);
-//                        reference.updateChildren(map);
 
-                        pd.dismiss();
+                            pd.dismiss();
+                        }
                     } else {
                         Toast.makeText(ProfileActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                         pd.dismiss();

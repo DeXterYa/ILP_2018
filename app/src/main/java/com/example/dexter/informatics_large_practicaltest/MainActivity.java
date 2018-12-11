@@ -1,35 +1,22 @@
 package com.example.dexter.informatics_large_practicaltest;
 
 
-import android.app.ActivityOptions;
+
 import android.content.Intent;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,19 +26,20 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import javax.annotation.Nullable;
+import java.util.Locale;
 
+import javax.annotation.Nullable;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
-    private String tag = "MainActivity";
+
 
     CircleImageView profile_image;
     TextView username;
 
     FirebaseUser firebaseUser;
     DatabaseReference reference;
-    private DocumentReference documentReference;
+    DocumentReference documentReference;
 
 
     Button dolr_out;
@@ -85,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+        }
 
 
 
@@ -98,17 +88,19 @@ public class MainActivity extends AppCompatActivity {
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
-                    username.setText(user.getUsername());
-                    if (user.getImageURL().equals("default")){
-                        profile_image.setImageResource(R.mipmap.ic_launcher);
-                    } else{
-                        Glide.with(MainActivity.this).load(user.getImageURL()).into (profile_image);
+                if (documentSnapshot != null) {
+                    if (documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            username.setText(user.getUsername());
+                        if (user.getImageURL().equals("default")) {
+                            profile_image.setImageResource(R.mipmap.ic_launcher);
+                        } else {
+                            Glide.with(MainActivity.this).load(user.getImageURL()).into(profile_image);
 
+                        }
+                        }
                     }
-                } else if (e != null) {
-
                 }
             }
         });
@@ -118,14 +110,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+        // Bottom Navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem= menu.getItem(0);
         menuItem.setChecked(true);
 
         bottomNavigationView.setOnNavigationItemSelectedListener((item) -> {
-            Fragment selectedFragment = null;
+
             switch (item.getItemId()) {
                 case R.id.navigation_map:
                     Intent intent1 = new Intent(MainActivity.this, Activity_One.class);
@@ -178,8 +170,11 @@ public class MainActivity extends AppCompatActivity {
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     User user = documentSnapshot.toObject(User.class);
-                    gold = user.getGOLD();
-                    level.setText("Level  " + String.format("%.0f", gold/2000));
+                    if (user != null) {
+                        gold = user.getGOLD();
+                        String string = "Level  " + String.format(Locale.getDefault(), "%.0f", gold / 2000);
+                        level.setText(string);
+                    }
                 }
             }
         });
@@ -225,12 +220,19 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    dolr_out.setText("DOLR             NUMBER: " + Integer.toString(numberOfDolr));
-                    peny_out.setText("PENY             NUMBER: "+Integer.toString(numberOfPeny));
-                    quid_out.setText("QUID             NUMBER: "+Integer.toString(numberOfQuid));
-                    shil_out.setText("SHIL             NUMBER: "+Integer.toString(numberOfShil));
-                    collected.setText("Collected: "+Integer.toString(numberOfCollected));
-                    inMarket.setText("In market: "+Integer.toString(numberOfInMarket));
+                    String string_1 = "DOLR             NUMBER: " + Integer.toString(numberOfDolr);
+                    String string_2 = "PENY             NUMBER: "+Integer.toString(numberOfPeny);
+                    String string_3 = "QUID             NUMBER: "+Integer.toString(numberOfQuid);
+                    String string_4 = "SHIL             NUMBER: "+Integer.toString(numberOfShil);
+                    String string_5 = "Collected: "+Integer.toString(numberOfCollected);
+                    String string_6 = "In market: "+Integer.toString(numberOfInMarket);
+
+                    dolr_out.setText(string_1);
+                    peny_out.setText(string_2);
+                    quid_out.setText(string_3);
+                    shil_out.setText(string_4);
+                    collected.setText(string_5);
+                    inMarket.setText(string_6);
 
 
                 }

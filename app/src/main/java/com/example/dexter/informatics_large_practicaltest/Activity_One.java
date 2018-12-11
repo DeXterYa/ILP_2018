@@ -1,6 +1,6 @@
 package com.example.dexter.informatics_large_practicaltest;
 
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.location.Location;
@@ -8,11 +8,8 @@ import java.io.*;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.lang.*;
-
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,14 +25,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.Time;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -46,7 +40,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.gson.JsonObject;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -69,53 +62,31 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode;
-import com.mapbox.mapboxsdk.style.expressions.Expression;
-import com.mapbox.mapboxsdk.style.layers.LineLayer;
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.mapboxsdk.utils.BitmapUtils;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.net.MalformedURLException;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Queue;
+
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.gt;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.gte;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.lt;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconTranslate;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
-import static java.sql.DriverManager.println;
 
 public class Activity_One extends FragmentActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener, MapboxMap.OnMapClickListener {
-    private String tag = "ActivityOne";
+    String tag = "ActivityOne";
     private MapView mapView;
     private MapboxMap map;
     private PermissionsManager permissionsManager;
@@ -129,10 +100,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     private Point destinationPosition;
     private Marker destinationMarker;
     private NavigationMapRoute navigationMapRoute;
-    private static final  String TAG = "Activity_One";
-    private int ifDownloadIcon;
-    private String nameOfCoin = "";
-    private Double valueOfCoin = 0.0;
+
+    String nameOfCoin = "";
+    Double valueOfCoin = 0.0;
     Queue<String> namesOfCoins = new LinkedList<>();
     Queue<Double> valuesOfCoins = new LinkedList<>();
     Queue<String> addNamesOfCoins = new LinkedList<>();
@@ -159,15 +129,11 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     Double floatValueOfQuid;
     Double floatValueOfShil;
 
-//    private ChangeCoinsValue changeCoinsValue;
-//    private DownloadIcon downloadIcon;
-//    private AddMarkers addMarkers;
-//    private Delete delete;
+    Double interestOfBank;
 
 
 
 
-    String dataNow;
     boolean a;
 
 
@@ -188,10 +154,11 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        valueOfDolr = (TextView) findViewById(R.id.valueofdolr);
-        valueOfPeny = (TextView) findViewById(R.id.valueofpeny);
-        valueOfQuid = (TextView) findViewById(R.id.valueofquid);
-        valueOfShil = (TextView) findViewById(R.id.valueofshil);
+        // Initialize the value shown in the screen
+        valueOfDolr = findViewById(R.id.valueofdolr);
+        valueOfPeny = findViewById(R.id.valueofpeny);
+        valueOfQuid = findViewById(R.id.valueofquid);
+        valueOfShil = findViewById(R.id.valueofshil);
         imageOfDolr = findViewById(R.id.dolr);
         imageOfPeny = findViewById(R.id.peny);
         imageOfQuid = findViewById(R.id.quid);
@@ -204,10 +171,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
-        navigationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Lauch navigation UI
+        navigationButton.setOnClickListener((View v) -> {
+
+                    //Launch navigation UI
                     if (originLocation != null) {
                     NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                             .origin(originPosition)
@@ -220,13 +186,13 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                 Toast.LENGTH_SHORT).show();
                     }
 
-                }
+
             });
 
 
 
 
-
+        // Bottom Navigation bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         Menu menu = bottomNavigationView.getMenu();
@@ -235,10 +201,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         bottomNavigationView.setOnNavigationItemSelectedListener((item) -> {
             switch (item.getItemId()) {
                 case R.id.navigation_map:
-//                    Intent intent1 = new Intent(Activity_One.this, Activity_One.class);
-//                    intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivityForResult(intent1,0);
-//                    overridePendingTransition(0,0);
+
                     break;
 
                 case R.id.navigation_coins:
@@ -271,10 +234,11 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
             return false;
         });
 
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
+        // Get the time of today
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
         Date now = new Date();
         String strDate = sdfDate.format(now);
-        String name = firebaseUser.getUid();
+
 
 
         DocumentReference documentReference = FirebaseFirestore.getInstance()
@@ -313,7 +277,11 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    // Change the value of collected coins
     private class ChangeCoinsValue2 extends AsyncTask<Void,Void,Void>{
+
+
+
         @Override
         protected Void doInBackground(Void... voids) {
 
@@ -351,10 +319,11 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 }
                             }
-                            valueOfDolr.setText(String.format("%.2f", floatValueOfDolr));
-                            valueOfPeny.setText(String.format("%.2f", floatValueOfPeny));
-                            valueOfQuid.setText(String.format("%.2f", floatValueOfQuid));
-                            valueOfShil.setText(String.format("%.2f", floatValueOfShil));
+
+                            valueOfDolr.setText(String.format(Locale.getDefault(),"%.2f", floatValueOfDolr));
+                            valueOfPeny.setText(String.format(Locale.getDefault(),"%.2f", floatValueOfPeny));
+                            valueOfQuid.setText(String.format(Locale.getDefault(),"%.2f", floatValueOfQuid));
+                            valueOfShil.setText(String.format(Locale.getDefault(),"%.2f", floatValueOfShil));
                         }
                     }
                 });
@@ -366,7 +335,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
+    // Download GeoJSON file from the server and upload to the Firebase
     private class DownloadIcon extends AsyncTask<Void,Void,Void> {
         String data = "";
 
@@ -376,14 +345,14 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
                 String data = "";
 
-                SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
+                SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
                 Date now = new Date();
                 String strDate = sdfDate.format(now);
-                String name = firebaseUser.getUid();
+
 
 
                 try {
-
+                    // Read the GeoJSON file from the server as String
                     URL url = new URL(getURL());
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     InputStream inputStream = httpURLConnection.getInputStream();
@@ -396,11 +365,34 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
                     JSONObject jsonObject = new JSONObject(data);
                     JSONObject jsonObject_rates = (JSONObject) jsonObject.get("rates");
+
+                    // Get rates
                     Double SHIL = (Double) jsonObject_rates.get("SHIL");
                     Double DOLR = (Double) jsonObject_rates.get("DOLR");
                     Double QUID = (Double) jsonObject_rates.get("QUID");
                     Double PENY = (Double) jsonObject_rates.get("PENY");
 
+                    // Update the value of GOLD with interest
+                    DocumentReference documentReference_gold = FirebaseFirestore.getInstance()
+                            .collection("User").document(firebaseUser.getUid());
+                    documentReference_gold.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                            if (documentSnapshot != null) {
+                                User user = documentSnapshot.toObject(User.class);
+                                if (user != null) {
+                                    Double value = user.getGOLD() / 2000;
+                                    interestOfBank = value.intValue() * 0.001;
+                                    value = user.getGOLD() * (1 + interestOfBank);
+                                    HashMap<String,Object> update = new HashMap<>();
+                                    update.put("GOLD", value);
+                                    documentReference_gold.update(update);
+                                }
+                            }
+                        }
+                    });
+
+                    // Reset the coins in the shopping bag
                     DocumentReference documentReference_USER = FirebaseFirestore.getInstance()
                             .collection("User").document(firebaseUser.getUid());
                     HashMap<String, Object> hashMap_USER = new HashMap<>();
@@ -410,7 +402,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     hashMap_USER.put("SHIL", 0.0);
                     documentReference_USER.update(hashMap_USER);
 
-
+                    //Upload new time
                     DocumentReference documentReference = FirebaseFirestore.getInstance()
                             .collection("Icons").document(firebaseUser.getUid())
                             .collection("times").document("time");
@@ -419,7 +411,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     documentReference.set(hashMap);
 
 
-
+                    // Upload the new rates
                     DocumentReference rates = FirebaseFirestore.getInstance()
                             .collection("Icons").document(firebaseUser.getUid())
                             .collection("Rates").document("rate");
@@ -433,6 +425,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
                     JSONArray features = (JSONArray) jsonObject.get("features");
 
+                    // Upload the information of 50 coins
                     for (int i=0; i<features.length(); i++) {
                         JSONObject jo = (JSONObject) features.get(i);
 
@@ -492,7 +485,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
         if(mapboxMap == null){
-            Log.d(tag, "[onMapReady] mapBox is null");
+            Toast.makeText(Activity_One.this, "Cannot show the map",
+                    Toast.LENGTH_SHORT).show();
         } else {
             map = mapboxMap;
             map.addOnMapClickListener(this);
@@ -515,7 +509,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
+    // Add markers to the map
     private class AddMarkers extends AsyncTask<Void,Void,Void> {
         @Override
         protected Void doInBackground(Void... voids) {
@@ -533,7 +527,6 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                 if ((markersonmap.getIsCollected_1() == 0) && (markersonmap.getIsStored() == 0) && (markersonmap.getIsInMarket() == 0)) {
                                     switch (markersonmap.getCurrency()) {
                                         case "SHIL":
-//                                    Double[] coinLoc_1 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
                                             coinsOnMap.put(d.getId(), "SHIL");
                                             IconFactory iconFactory1 = IconFactory.getInstance(Activity_One.this);
                                             Icon icon1 = iconFactory1.fromResource(R.mipmap.shil);
@@ -545,7 +538,6 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                             break;
 
                                         case "DOLR":
-//                                    Double[] coinLoc_2 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
                                             coinsOnMap.put(d.getId(), "DOLR");
                                             IconFactory iconFactory2 = IconFactory.getInstance(Activity_One.this);
                                             Icon icon2 = iconFactory2.fromResource(R.mipmap.dolr);
@@ -557,7 +549,6 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                             break;
 
                                         case "PENY":
-//                                    Double[] coinLoc_3 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
                                             coinsOnMap.put(d.getId(), "PENY");
                                             IconFactory iconFactory3 = IconFactory.getInstance(Activity_One.this);
                                             Icon icon3 = iconFactory3.fromResource(R.mipmap.peny);
@@ -569,7 +560,6 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                                             break;
 
                                         case "QUID":
-//                                    Double[] coinLoc_4 = {markersonmap.getLatitude(),markersonmap.getLongitude()};
                                             coinsOnMap.put(d.getId(), "QUID");
                                             IconFactory iconFactory4 = IconFactory.getInstance(Activity_One.this);
                                             Icon icon4 = iconFactory4.fromResource(R.mipmap.quid);
@@ -603,11 +593,9 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)){
-            Log.d(tag, "Permission are granted");
             initializeLocationEngine();
             initializeLocationLayer();
         } else {
-            Log.d(tag, "Permission are not granted");
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
         }
@@ -636,10 +624,12 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     @SuppressWarnings("MissingPermission")
     private void initializeLocationLayer() {
         if (mapView == null) {
-            Log.d(tag, "mapView is null");
+            Toast.makeText(Activity_One.this, "Cannot load the map",
+                    Toast.LENGTH_SHORT).show();
         } else {
             if (map == null) {
-                Log.d(tag, "map is null");
+                Toast.makeText(Activity_One.this, "Cannot load the map",
+                        Toast.LENGTH_SHORT).show();
             } else {
                 locationLayerPlugin = new LocationLayerPlugin(mapView, map, locationEngine);
                 locationLayerPlugin.setLocationLayerEnabled(true);
@@ -684,39 +674,38 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void getRoute(Point origin, Point destination) {
-        NavigationRoute.builder()
-                .accessToken(Mapbox.getAccessToken())
-                .origin(origin)
-                .destination(destination)
-                .build()
-                .getRoute(new Callback<DirectionsResponse>() {
-                    @Override
-                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                        if (response.body() == null) {
-                            Log.e(TAG,"No routes found, check right user and access token");
-                            return;
-                        }else if (response.body().routes().size() == 0 ) {
-                            Log.e(TAG, "No routes found");
-                            return;
+        if (Mapbox.getAccessToken() != null) {
+            NavigationRoute.builder()
+                    .accessToken(Mapbox.getAccessToken())
+                    .origin(origin)
+                    .destination(destination)
+                    .build()
+                    .getRoute(new Callback<DirectionsResponse>() {
+                        @Override
+                        public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                            if (response.body() == null) {
+                                return;
+                            } else if (response.body().routes().size() == 0) {
+                                return;
+                            }
+                            DirectionsRoute currentRoute = response.body().routes().get(0);
+
+                            if (navigationMapRoute != null) {
+                                navigationMapRoute.removeRoute();
+                            } else {
+                                navigationMapRoute = new NavigationMapRoute(null, mapView, map);
+                            }
+
+                            navigationMapRoute.addRoute(currentRoute);
+
                         }
-                        DirectionsRoute currentRoute = response.body().routes().get(0);
 
-                        if(navigationMapRoute !=null){
-                            navigationMapRoute.removeRoute();
-                        } else {
-                            navigationMapRoute = new NavigationMapRoute(null, mapView, map);
+                        @Override
+                        public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+
                         }
-
-                        navigationMapRoute.addRoute(currentRoute);
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                        Log.e(TAG,"Error:" + t.getMessage());
-
-                    }
-                });
+                    });
+        }
 
     }
 
@@ -724,7 +713,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     @Override
     @SuppressWarnings("MissingPermission")
     public void onConnected() {
-        Log.d(tag, "[onConnected] requesting location updates");
+
         locationEngine.requestLocationUpdates();
 
     }
@@ -735,7 +724,8 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
         if (location == null) {
             Log.d(tag, "[onLocationChanged] location is null");
         } else {
-            Log.d(tag, "[onLocationChanged] location is not null");
+
+            // Calculate the distance between current location and different markers when location changes
             originLocation = location;
             setCameraPosition(location);
             Location currentLocation = locationEngine.getLastLocation();
@@ -749,7 +739,7 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
                     Location newLocation = new Location("newlocation");
                     newLocation.setLatitude(latitude);
                     newLocation.setLongitude(longitude);
-                    String name = marker.getTitle();
+
                     if (currentLocation.distanceTo(newLocation) <= 25) {
                         DocumentReference documentReference = FirebaseFirestore.getInstance()
                                 .collection("Icons").document(firebaseUser.getUid())
@@ -791,17 +781,13 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
-        // Present toast or dialog.
-        Log.d(tag, "Permissions: " + permissionsToExplain.toString());
-// Present toast or dialog.
 
     }
 
     @Override
     public void onPermissionResult(boolean granted) {
-        Log.d(tag, "[onPermissionResult] granted == " + granted);
         if (granted) {
-            enableLocation();//TODO Open a dialogue with the user
+            enableLocation();
         }
     }
 
@@ -893,14 +879,13 @@ public class Activity_One extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
+    // Method to get the URL of today
     private String getURL(){
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd");//dd/MM/yyyy
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());//dd/MM/yyyy
         Date now = new Date();
         String strDate = sdfDate.format(now);
-        String URL = "http://homepages.inf.ed.ac.uk/stg/coinz/"+strDate+"/coinzmap.geojson";
-        return URL;
+//        String URL = "http://homepages.inf.ed.ac.uk/stg/coinz/"+strDate+"/coinzmap.geojson";
+        return "http://homepages.inf.ed.ac.uk/stg/coinz/"+strDate+"/coinzmap.geojson";
     }
 
 

@@ -18,21 +18,23 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.util.Locale;
+
 import javax.annotation.Nullable;
 
 public class BagActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
-    private Button first_button;
-    private Button second_button;
-    private Button third_button;
-    private Button fourth_button;
+    Button first_button;
+    Button second_button;
+    Button third_button;
+    Button fourth_button;
 
     private TextView dolr_text;
     private TextView peny_text;
     private TextView quid_text;
     private TextView shil_text;
 
-    private Toolbar mTopToolbar;
+    Toolbar mTopToolbar;
 
     private Double valueOfDolr;
     private Double valueOfPeny;
@@ -60,61 +62,49 @@ public class BagActivity extends AppCompatActivity {
 
         mTopToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mTopToolbar);
-        getSupportActionBar().setTitle("Coins you bought");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Coins you bought");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        mTopToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        mTopToolbar.setNavigationOnClickListener((View v) ->  {
                 onBackPressed();
-            }
         });
 
         ShowCoinValue showCoinValue = new ShowCoinValue();
         showCoinValue.execute();
 
-        first_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        first_button.setOnClickListener((View v) -> {
                 if (valueOfDolr > 0) {
                     Intent intent = new Intent(BagActivity.this, ConversionActivity.class);
                     intent.putExtra("currency", "DOLR");
                     startActivity(intent);
                 }
-            }
         });
 
-        second_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        second_button.setOnClickListener((View v) -> {
                 if (valueOfPeny > 0) {
                     Intent intent = new Intent(BagActivity.this, ConversionActivity.class);
                     intent.putExtra("currency", "PENY");
                     startActivity(intent);
                 }
-            }
         });
 
-        third_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        third_button.setOnClickListener((View v) -> {
                 if (valueOfQuid > 0) {
                     Intent intent = new Intent(BagActivity.this, ConversionActivity.class);
                     intent.putExtra("currency", "QUID");
                     startActivity(intent);
                 }
-            }
         });
 
-        fourth_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        fourth_button.setOnClickListener((View v) -> {
                 if (valueOfShil > 0) {
                     Intent intent = new Intent(BagActivity.this, ConversionActivity.class);
                     intent.putExtra("currency", "SHIL");
                     startActivity(intent);
                 }
-            }
         });
 
 
@@ -132,15 +122,20 @@ public class BagActivity extends AppCompatActivity {
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
                         User user = documentSnapshot.toObject(User.class);
-
-                        valueOfDolr = user.getDOLR();
-                        valueOfPeny = user.getPENY();
-                        valueOfQuid = user.getQUID();
-                        valueOfShil = user.getSHIL();
-                        dolr_text.setText("DOLR    Value: " + String.format("%.2f", user.getDOLR()));
-                        peny_text.setText("PENY    Value: " + String.format("%.2f", user.getPENY()));
-                        quid_text.setText("QUID    Value: " + String.format("%.2f", user.getQUID()));
-                        shil_text.setText("SHIL    Value: " + String.format("%.2f", user.getSHIL()));
+                        if (user != null) {
+                            valueOfDolr = user.getDOLR();
+                            valueOfPeny = user.getPENY();
+                            valueOfQuid = user.getQUID();
+                            valueOfShil = user.getSHIL();
+                            String string_1 = "DOLR    Value: " + String.format(Locale.getDefault(), "%.2f", user.getDOLR());
+                            String string_2 = "PENY    Value: " + String.format(Locale.getDefault(), "%.2f", user.getPENY());
+                            String string_3 = "QUID    Value: " + String.format(Locale.getDefault(), "%.2f", user.getQUID());
+                            String string_4 = "SHIL    Value: " + String.format(Locale.getDefault(), "%.2f", user.getSHIL());
+                            dolr_text.setText(string_1);
+                            peny_text.setText(string_2);
+                            quid_text.setText(string_3);
+                            shil_text.setText(string_4);
+                        }
 
                     }
                 }

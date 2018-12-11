@@ -27,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Locale;
+
 public class Activity_Two extends AppCompatActivity {
 
     FirebaseUser firebaseUser3;
@@ -53,13 +55,13 @@ public class Activity_Two extends AppCompatActivity {
     Double ratePENY;
     Double rateQUID;
     Double rateSHIL;
-    Double rateINTEREST;
+
 
     Double floatValueOfDolr;
     Double floatValueOfPeny;
     Double floatValueOfQuid;
     Double floatValueOfShil;
-    private Toolbar mTopToolbar;
+    Toolbar mTopToolbar;
 
     Double gold;
     Double level;
@@ -87,7 +89,7 @@ public class Activity_Two extends AppCompatActivity {
         rateOfSHIL = findViewById(R.id.shil_rate);
         rateOfInterest = findViewById(R.id.interest_rate);
 
-        mTopToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mTopToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mTopToolbar);
 
 
@@ -103,19 +105,12 @@ public class Activity_Two extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_map:
                     Intent intent1 = new Intent(Activity_Two.this, Activity_One.class);
-//                    intent1.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivityForResult(intent1,0);
-//                    overridePendingTransition(0,0);
                     startActivity(intent1);
                     overridePendingTransition(0,0);
                     finish();
                     break;
 
                 case R.id.navigation_coins:
-//                    Intent intent2 = new Intent(Activity_Two.this, Activity_Two.class);
-//                    intent2.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivityForResult(intent2,0);
-//                    overridePendingTransition(0,0);
                     break;
 
                 case R.id.navigation_friends:
@@ -141,32 +136,27 @@ public class Activity_Two extends AppCompatActivity {
         ShowValues showValues = new ShowValues();
         showValues.execute();
 
-        buttonOfDOLR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        buttonOfDOLR.setOnClickListener((View v) -> {
                 startActivity(new Intent(Activity_Two.this, DolrActivity.class));
-            }
         });
 
-        buttonOfPENY.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        buttonOfPENY.setOnClickListener((View v) -> {
+
                 startActivity(new Intent(Activity_Two.this, PenyActivity.class));
-            }
         });
+        //noinspection CodeBlock2Expr
+        buttonOfQUID.setOnClickListener((View v) ->  {
 
-        buttonOfQUID.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 startActivity(new Intent(Activity_Two.this, QuidActivity.class));
-            }
-        });
 
-        buttonOfSHIL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        });
+        //noinspection CodeBlock2Expr
+        buttonOfSHIL.setOnClickListener((View v) -> {
+
                 startActivity(new Intent(Activity_Two.this, ShilActivity.class));
-            }
+
         });
 
 
@@ -209,10 +199,15 @@ public class Activity_Two extends AppCompatActivity {
                                 }
                             }
                         }
-                        buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
-                        buttonOfPENY.setText("Value: "+String.format("%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY));
-                        buttonOfQUID.setText("Value: "+String.format("%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID));
-                        buttonOfSHIL.setText("Value: "+String.format("%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+
+                        String string_1 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR);
+                        buttonOfDOLR.setText(string_1);
+                        String string_2 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY);
+                        buttonOfPENY.setText(string_2);
+                        String string_3 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID);
+                        buttonOfQUID.setText(string_3);
+                        String string_4 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL);
+                        buttonOfSHIL.setText(string_4);
                     }
                 }
             });
@@ -252,10 +247,14 @@ public class Activity_Two extends AppCompatActivity {
                                 }
                             }
                         }
-                        buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
-                        buttonOfPENY.setText("Value: "+String.format("%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY));
-                        buttonOfQUID.setText("Value: "+String.format("%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID));
-                        buttonOfSHIL.setText("Value: "+String.format("%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+                        String string_1 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR);
+                        buttonOfDOLR.setText(string_1);
+                        String string_2 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY);
+                        buttonOfPENY.setText(string_2);
+                        String string_3 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID);
+                        buttonOfQUID.setText(string_3);
+                        String string_4 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL);
+                        buttonOfSHIL.setText(string_4);
                     }
                 }
             });
@@ -270,14 +269,16 @@ public class Activity_Two extends AppCompatActivity {
                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
                         Rate rate = documentSnapshot.toObject(Rate.class);
-                        rateDOLR = rate.getDOLR();
-                        ratePENY = rate.getPENY();
-                        rateQUID = rate.getQUID();
-                        rateSHIL = rate.getSHIL();
-                        rateOfDOLR.setText(String.format("%.4f", rateDOLR));
-                        rateOfPENY.setText(String.format("%.4f", ratePENY));
-                        rateOfQUID.setText(String.format("%.4f", rateQUID));
-                        rateOfSHIL.setText(String.format("%.4f", rateSHIL));
+                        if (rate != null) {
+                            rateDOLR = rate.getDOLR();
+                            ratePENY = rate.getPENY();
+                            rateQUID = rate.getQUID();
+                            rateSHIL = rate.getSHIL();
+                            rateOfDOLR.setText(String.format(Locale.getDefault(), "%.4f", rateDOLR));
+                            rateOfPENY.setText(String.format(Locale.getDefault(), "%.4f", ratePENY));
+                            rateOfQUID.setText(String.format(Locale.getDefault(), "%.4f", rateQUID));
+                            rateOfSHIL.setText(String.format(Locale.getDefault(), "%.4f", rateSHIL));
+                        }
                     }
                 }
             });
@@ -289,7 +290,10 @@ public class Activity_Two extends AppCompatActivity {
                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
                         User user = documentSnapshot.toObject(User.class);
-                        buttonOfGOLD.setText("Gold   value: "+user.getGOLD());
+                        if (user != null) {
+                            String string = "Gold   value: " + user.getGOLD();
+                            buttonOfGOLD.setText(string);
+                        }
                     }
                 }
             });
@@ -301,20 +305,26 @@ public class Activity_Two extends AppCompatActivity {
                 public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                     if (documentSnapshot != null) {
                         User user = documentSnapshot.toObject(User.class);
-                        gold = user.getGOLD();
-                        Double value = gold/2000;
-                        level =  value.intValue()*0.001 ;
-                        rateOfInterest.setText(String.format("%.3f", level));
+                        if (user != null) {
+                            gold = user.getGOLD();
+                            Double value = gold / 2000;
+                            level = value.intValue() * 0.001;
+                            rateOfInterest.setText(String.format(Locale.getDefault(), "%.3f", level));
+                        }
                     }
                 }
             });
 
 
 
-            buttonOfDOLR.setText("Value: "+String.format("%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR));
-            buttonOfPENY.setText("Value: "+String.format("%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY));
-            buttonOfQUID.setText("Value: "+String.format("%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID));
-            buttonOfSHIL.setText("Value: "+String.format("%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL));
+            String string_1 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfDolr)+"  "+"Number: "+Integer.toString(numberOfDOLR);
+            buttonOfDOLR.setText(string_1);
+            String string_2 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfPeny)+"  "+"Number: "+Integer.toString(numberOfPENY);
+            buttonOfPENY.setText(string_2);
+            String string_3 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfQuid)+"  "+"Number: "+Integer.toString(numberOfQUID);
+            buttonOfQUID.setText(string_3);
+            String string_4 = "Value: "+String.format(Locale.getDefault(), "%.2f", floatValueOfShil)+"  "+"Number: "+Integer.toString(numberOfSHIL);
+            buttonOfSHIL.setText(string_4);
 
             return null;
         }

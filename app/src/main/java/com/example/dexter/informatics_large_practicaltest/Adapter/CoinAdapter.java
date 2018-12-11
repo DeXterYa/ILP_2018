@@ -1,6 +1,6 @@
 package com.example.dexter.informatics_large_practicaltest.Adapter;
 
-import android.annotation.TargetApi;
+
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.dexter.informatics_large_practicaltest.Model.Coin;
@@ -40,7 +39,8 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.MyViewHolder> 
 //    @TargetApi(23)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        myViewHolder.title.setText(coins.get(i).getTitle()+"  "+"Value: "+coins.get(i).getValue());
+        String string = coins.get(i).getTitle()+"  "+"Value: "+coins.get(i).getValue();
+        myViewHolder.title.setText(string);
         int id = coins.get(i).getId();
         if (selectedIds.contains(id)) {
             myViewHolder.rootView.setForeground(new ColorDrawable(ContextCompat.getColor(context, R.color.colorControlActivated)));
@@ -65,7 +65,7 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.MyViewHolder> 
 
     class MyViewHolder extends  RecyclerView.ViewHolder {
         TextView title;
-        TextView title2;
+
 
         FrameLayout rootView;
         MyViewHolder (View itemView) {

@@ -28,7 +28,7 @@ public class RadioUserAdapter extends RecyclerView.Adapter<RadioUserAdapter.View
     }
 
 
-    public RadioUserAdapter.ViewHolder  onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RadioUserAdapter.ViewHolder  onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.coinradio_item, parent, false);
 
@@ -50,7 +50,8 @@ public class RadioUserAdapter extends RecyclerView.Adapter<RadioUserAdapter.View
                 viewHolder.selectionState.setChecked(false);
             }
         }
-        viewHolder.title.setText(coins.getTitle() + "   Value: " + coins.getValue());
+        String string = coins.getTitle() + "   Value: " + coins.getValue();
+        viewHolder.title.setText(string);
 
     }
 
@@ -75,20 +76,16 @@ public class RadioUserAdapter extends RecyclerView.Adapter<RadioUserAdapter.View
 
     public  class  ViewHolder extends  RecyclerView.ViewHolder {
         public TextView title;
-        public RadioButton selectionState;
+        private RadioButton selectionState;
 
-        public ViewHolder (View view) {
+        private ViewHolder (View view) {
             super(view);
             title = view.findViewById(R.id.title);
             selectionState = view.findViewById(R.id.offer_select);
 
-            selectionState.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            selectionState.setOnClickListener((View v) ->  {
                     lastSelectedPosition = getAdapterPosition();
                     notifyDataSetChanged();
-
-                }
             });
         }
     }

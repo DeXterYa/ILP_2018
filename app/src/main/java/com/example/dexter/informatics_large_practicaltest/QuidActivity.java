@@ -49,10 +49,10 @@ public class QuidActivity extends AppCompatActivity implements ActionMode.Callba
 
     private Double Gold;
 
-    private boolean ifaddgold;
+    boolean ifaddgold;
     private int numberInBank;
 
-    private HashMap<String, Object> update;
+    HashMap<String, Object> update;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class QuidActivity extends AppCompatActivity implements ActionMode.Callba
         setContentView(R.layout.activity_quid);
 
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView =  findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -74,11 +74,15 @@ public class QuidActivity extends AppCompatActivity implements ActionMode.Callba
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("QUID in wallet");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("QUID in wallet");
+        }
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
         actionMode = startActionMode(QuidActivity.this);
-        actionMode.setTitle("Choose coins");
+        if (actionMode != null) {
+            actionMode.setTitle("Choose coins");
+        }
 
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -113,7 +117,9 @@ public class QuidActivity extends AppCompatActivity implements ActionMode.Callba
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     Rate rate = documentSnapshot.toObject(Rate.class);
-                    rate_quid = rate.getQUID();
+                    if (rate != null) {
+                        rate_quid = rate.getQUID();
+                    }
                 }
             }
         });
@@ -217,8 +223,10 @@ public class QuidActivity extends AppCompatActivity implements ActionMode.Callba
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     User user = documentSnapshot.toObject(User.class);
-                                    Gold = user.getGOLD() + Double.parseDouble(coin_quid.getValue()) * rate_quid;
-                                    uploadgold();
+                                    if (user != null) {
+                                        Gold = user.getGOLD() + Double.parseDouble(coin_quid.getValue()) * rate_quid;
+                                        uploadgold();
+                                    }
                                 }
                             });
 
@@ -282,6 +290,6 @@ public class QuidActivity extends AppCompatActivity implements ActionMode.Callba
         actionMode = null;
         isMultiSelect = false;
         selectedIds = new ArrayList<>();
-        adapter.setSelectedIds(new ArrayList<Integer>());
+        adapter.setSelectedIds(new ArrayList<>());
     }
 }

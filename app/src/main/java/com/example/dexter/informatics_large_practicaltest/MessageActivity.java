@@ -1,8 +1,6 @@
 package com.example.dexter.informatics_large_practicaltest;
 
 import android.content.Intent;
-import android.provider.DocumentsContract;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,21 +13,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.example.dexter.informatics_large_practicaltest.Adapter.MessageAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Chat;
-import com.example.dexter.informatics_large_practicaltest.Model.Chatlist;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.firebase.client.Firebase;
-import com.firebase.client.ServerValue;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,15 +32,13 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.ServerTimestamp;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Nullable;
 
+import javax.annotation.Nullable;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageActivity extends AppCompatActivity {
@@ -88,8 +77,12 @@ public class MessageActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+
 
 
 
@@ -99,7 +92,7 @@ public class MessageActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-
+        // Keep the latest message showing at the bottom
             recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -108,7 +101,9 @@ public class MessageActivity extends AppCompatActivity {
                             recyclerView.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                                    if (recyclerView.getAdapter() != null) {
+                                        recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                                    }
                                 }
                             });
                         }
@@ -119,12 +114,9 @@ public class MessageActivity extends AppCompatActivity {
 
 
 
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        //noinspection CodeBlock2Expr
+        toolbar.setNavigationOnClickListener((View v) -> {
                 finish();
-            }
         });
 
         profile_image = findViewById(R.id.profile_image);
@@ -138,9 +130,7 @@ public class MessageActivity extends AppCompatActivity {
         intent = getIntent();
         userid = intent.getStringExtra("userid");
 
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btn_send.setOnClickListener((View v) -> {
                 String msg = text_send.getText().toString();
                 if (!msg.equals("")) {
                     sendMessage(fUser.getUid(), userid, msg);
@@ -149,25 +139,28 @@ public class MessageActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
-            }
         });
 
 
-
+        // Show your friend's display image
         documentReference = FirebaseFirestore.getInstance().collection("User").document(userid);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                User user = documentSnapshot.toObject(User.class);
-                username.setText(user.getUsername());
-                if (user.getImageURL().equals("default")){
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
-                } else{
-                    Glide.with(MessageActivity.this).load(user.getImageURL()).into (profile_image);
+                if (documentSnapshot != null) {
+                    User user = documentSnapshot.toObject(User.class);
+                    if (user != null) {
+                        username.setText(user.getUsername());
+                        if (user.getImageURL().equals("default")) {
+                            profile_image.setImageResource(R.mipmap.ic_launcher);
+                        } else {
+                            Glide.with(MessageActivity.this).load(user.getImageURL()).into(profile_image);
 
+                        }
+
+                        readMessages(fUser.getUid(), userid, user.getImageURL());
+                    }
                 }
-
-                readMessages(fUser.getUid(), userid, user.getImageURL());
 
             }
         });
@@ -178,15 +171,10 @@ public class MessageActivity extends AppCompatActivity {
     }
 
 
-    public static Date getCurrentTimeStamp() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");//dd/MM/yyyy
-        Date now = new Date();
-        String strDate = sdfDate.format(now);
-        return now;
-    }
 
 
 
+    // Check if the message has been seen by your friend
     private void seenMessage(String userid) {
         collectionReference = FirebaseFirestore.getInstance().collection("Chats");
         Query query =  collectionReference.whereEqualTo("receiver", fUser.getUid())
@@ -197,7 +185,7 @@ public class MessageActivity extends AppCompatActivity {
                 if (is_seen == 0) {
                     if (queryDocumentSnapshots != null) {
                         for (QueryDocumentSnapshot d : queryDocumentSnapshots) {
-                            Chat chat = d.toObject(Chat.class);
+
                             String id = d.getId();
                             documentReference = FirebaseFirestore.getInstance().collection("Chats").document(id);
                             HashMap<String, Object> map = new HashMap<>();
@@ -217,7 +205,7 @@ public class MessageActivity extends AppCompatActivity {
 
 
         collectionReference = FirebaseFirestore.getInstance().collection("Chats");
-        Date time_stamp = getCurrentTimeStamp();
+
 
 
         HashMap<String, Object> hashMap = new HashMap<>();
@@ -233,7 +221,7 @@ public class MessageActivity extends AppCompatActivity {
         HashMap<String, String> Map1 = new HashMap<>();
         chatting1.set(Map1);
 
-
+        // Meanwhile, send the time of the conversation to Firebase
         DocumentReference chatRef1 = FirebaseFirestore.getInstance()
                 .collection("Chatlist").document(sender)
                 .collection("Users").document(receiver);
@@ -265,7 +253,7 @@ public class MessageActivity extends AppCompatActivity {
         mChat = new ArrayList<>();
 
 
-
+        // Order the message according to the time
         collectionReference = FirebaseFirestore.getInstance().collection("Chats");
         Query order = collectionReference.orderBy("time_stamp",Query.Direction.ASCENDING);
         order.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
@@ -288,8 +276,9 @@ public class MessageActivity extends AppCompatActivity {
 
                         messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageURL);
                         recyclerView.setAdapter(messageAdapter);
-                        recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
-
+                        if (recyclerView.getAdapter() != null) {
+                            recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
+                        }
                     }
 
                 } else {
@@ -320,7 +309,7 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-
+    // Upload the status of the user
     @Override
     protected void onResume() {
         super.onResume();

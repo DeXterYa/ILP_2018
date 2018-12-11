@@ -1,9 +1,7 @@
 package com.example.dexter.informatics_large_practicaltest;
 
-import android.app.ActionBar;
+
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,15 +13,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.example.dexter.informatics_large_practicaltest.Adapter.CoinAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Coin;
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
 import com.example.dexter.informatics_large_practicaltest.Model.Rate;
 import com.example.dexter.informatics_large_practicaltest.Model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -34,11 +29,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 public class DolrActivity extends AppCompatActivity implements ActionMode.Callback{
@@ -55,9 +48,9 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
 
     private Double Gold;
 
-    private boolean ifaddgold;
+    boolean ifaddgold;
 
-    private HashMap<String, Object> update;
+    HashMap<String, Object> update;
 
     private int numberInBank;
 
@@ -71,7 +64,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
         setContentView(R.layout.activity_dolr);
 
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView = findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -80,11 +73,15 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("DOLR in wallet");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("DOLR in wallet");
+        }
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
         actionMode = startActionMode(DolrActivity.this);
-        actionMode.setTitle("Choose coins");
+        if (actionMode != null) {
+            actionMode.setTitle("Choose coins");
+        }
 
 
 
@@ -111,7 +108,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                 ifaddgold = true;
             }
         }));
-
+        // Get DOLR's rate
         DocumentReference documentReference6 = FirebaseFirestore.getInstance()
                 .collection("Icons").document(firebaseUser.getUid())
                 .collection("Rates").document("rate");
@@ -120,12 +117,14 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     Rate rate = documentSnapshot.toObject(Rate.class);
-                    rate_dolr = rate.getDOLR();
+                    if (rate != null) {
+                        rate_dolr = rate.getDOLR();
+                    }
                 }
             }
         });
 
-
+        // Get the number of coins which user has stored in the bank
         CollectionReference collectionReference = FirebaseFirestore.getInstance()
                 .collection("Icons").document(firebaseUser.getUid())
                 .collection("features");
@@ -214,6 +213,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
 
         switch (item.getItemId()) {
             case R.id.action_store:
+                // Make sure that the operation of the user is eligible
                 if ((numberInBank < 25) && ((25-numberInBank)>=selectedIds.size())) {
                     for (Coin coin_dolr : mcoin) {
                         if (selectedIds.contains(coin_dolr.getId())) {
@@ -223,8 +223,10 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     User user = documentSnapshot.toObject(User.class);
-                                    Gold = user.getGOLD() + Double.parseDouble(coin_dolr.getValue()) * rate_dolr;
-                                    uploadgold();
+                                    if (user != null) {
+                                        Gold = user.getGOLD() + Double.parseDouble(coin_dolr.getValue()) * rate_dolr;
+                                        uploadgold();
+                                    }
                                 }
                             });
 
@@ -273,6 +275,7 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
     }
 
     private void uploadgold() {
+        // Update the value of gold
         DocumentReference documentReference99 = FirebaseFirestore.getInstance()
                 .collection("User").document(firebaseUser.getUid());
         update = new HashMap<>();
@@ -288,6 +291,6 @@ public class DolrActivity extends AppCompatActivity implements ActionMode.Callba
         actionMode = null;
         isMultiSelect = false;
         selectedIds = new ArrayList<>();
-        adapter.setSelectedIds(new ArrayList<Integer>());
+        adapter.setSelectedIds(new ArrayList<>());
     }
 }

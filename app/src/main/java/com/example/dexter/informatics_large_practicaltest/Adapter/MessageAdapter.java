@@ -1,7 +1,6 @@
 package com.example.dexter.informatics_large_practicaltest.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,9 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
-import com.example.dexter.informatics_large_practicaltest.MessageActivity;
 import com.example.dexter.informatics_large_practicaltest.Model.Chat;
-import com.example.dexter.informatics_large_practicaltest.Model.User;
 import com.example.dexter.informatics_large_practicaltest.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,8 +18,8 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
-    public static  final int MSG_TYPE_LEFT = 0;
-    public static  final int MSG_TYPE_RIGHT = 1;
+    private static  final int MSG_TYPE_LEFT = 0;
+    private static  final int MSG_TYPE_RIGHT = 1;
 
 
     private Context mContext;
@@ -63,9 +60,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         if (i == mChat.size()-1) {
             if (chat.isIsseen()) {
-                viewHolder.txt_seen.setText("Seen");
+                String string = "Seen";
+                viewHolder.txt_seen.setText(string);
             } else {
-                viewHolder.txt_seen.setText("Delivered");
+                String string = "Delivered";
+                viewHolder.txt_seen.setText(string);
             }
         } else {
             viewHolder.txt_seen.setVisibility(View.GONE);
@@ -86,7 +85,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
 
 
-        public ViewHolder(@NonNull View itemView) {
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
 
 

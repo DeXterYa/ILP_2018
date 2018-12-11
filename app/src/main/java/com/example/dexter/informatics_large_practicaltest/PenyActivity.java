@@ -1,7 +1,6 @@
 package com.example.dexter.informatics_large_practicaltest;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.example.dexter.informatics_large_practicaltest.Adapter.CoinAdapter;
 import com.example.dexter.informatics_large_practicaltest.Model.Coin;
 import com.example.dexter.informatics_large_practicaltest.Model.Markersonmap;
@@ -30,7 +28,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,10 +47,10 @@ public class PenyActivity extends AppCompatActivity implements ActionMode.Callba
 
     private Double Gold;
 
-    private boolean ifaddgold;
+    boolean ifaddgold;
     private int numberInBank;
 
-    private HashMap<String, Object> update;
+    HashMap<String, Object> update;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +62,7 @@ public class PenyActivity extends AppCompatActivity implements ActionMode.Callba
 
         setContentView(R.layout.activity_peny);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView = findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -74,11 +71,16 @@ public class PenyActivity extends AppCompatActivity implements ActionMode.Callba
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("PENY in wallet");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("PENY in wallet");
+        }
+
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
         actionMode = startActionMode(PenyActivity.this);
-        actionMode.setTitle("Choose coins");
+        if (actionMode != null) {
+            actionMode.setTitle("Choose coins");
+        }
 
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -216,8 +218,10 @@ public class PenyActivity extends AppCompatActivity implements ActionMode.Callba
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     User user = documentSnapshot.toObject(User.class);
-                                    Gold = user.getGOLD() + Double.parseDouble(coin_peny.getValue()) * rate_peny;
-                                    uploadgold();
+                                    if (user != null) {
+                                        Gold = user.getGOLD() + Double.parseDouble(coin_peny.getValue()) * rate_peny;
+                                        uploadgold();
+                                    }
                                 }
                             });
 
@@ -282,6 +286,6 @@ public class PenyActivity extends AppCompatActivity implements ActionMode.Callba
         actionMode = null;
         isMultiSelect = false;
         selectedIds = new ArrayList<>();
-        adapter.setSelectedIds(new ArrayList<Integer>());
+        adapter.setSelectedIds(new ArrayList<>());
     }
 }

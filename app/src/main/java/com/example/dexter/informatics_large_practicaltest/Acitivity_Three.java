@@ -2,7 +2,6 @@ package com.example.dexter.informatics_large_practicaltest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
@@ -11,27 +10,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
 import com.example.dexter.informatics_large_practicaltest.Fragments.ChatsFragment;
 import com.example.dexter.informatics_large_practicaltest.Fragments.UserFragment;
-import com.example.dexter.informatics_large_practicaltest.Model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Acitivity_Three extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
 
     FirebaseUser firebaseUser4;
 
@@ -54,7 +45,7 @@ public class Acitivity_Three extends AppCompatActivity {
 
         tabLayout.setupWithViewPager(viewPager);
 
-
+        // Create two fragments
 
 
 
@@ -83,10 +74,7 @@ public class Acitivity_Three extends AppCompatActivity {
                     break;
 
                 case R.id.navigation_friends:
-//                    Intent intent3 = new Intent(Acitivity_Three.this, Acitivity_Three.class);
-//                    intent3.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivityForResult(intent3,0);
-//                    overridePendingTransition(0,0);
+
                     break;
                 case R.id.navigation_welcome:
                     Intent intent4 = new Intent(Acitivity_Three.this, MainActivity.class);
@@ -136,7 +124,7 @@ public class Acitivity_Three extends AppCompatActivity {
             return fragments.size();
         }
 
-        public void addFragment (Fragment fragment, String title) {
+        private void addFragment (Fragment fragment, String title) {
             fragments.add(fragment);
             titles.add(title);
         }

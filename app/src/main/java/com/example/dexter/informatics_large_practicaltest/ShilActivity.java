@@ -49,9 +49,9 @@ public class ShilActivity extends AppCompatActivity implements ActionMode.Callba
 
     private Double Gold;
 
-    private boolean ifaddgold;
+    boolean ifaddgold;
 
-    private HashMap<String, Object> update;
+    HashMap<String, Object> update;
     private int numberInBank;
 
 
@@ -64,7 +64,7 @@ public class ShilActivity extends AppCompatActivity implements ActionMode.Callba
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         setContentView(R.layout.activity_shil);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView = findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -73,11 +73,16 @@ public class ShilActivity extends AppCompatActivity implements ActionMode.Callba
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("SHIL in wallet");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("SHIL in wallet");
+        }
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
-        actionMode = startActionMode(ShilActivity.this);
-        actionMode.setTitle("Choose coins");
+
+            actionMode = startActionMode(ShilActivity.this);
+        if (actionMode != null) {
+            actionMode.setTitle("Choose coins");
+        }
 
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -112,7 +117,9 @@ public class ShilActivity extends AppCompatActivity implements ActionMode.Callba
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     Rate rate = documentSnapshot.toObject(Rate.class);
-                    rate_shil = rate.getSHIL();
+                    if (rate != null) {
+                        rate_shil = rate.getSHIL();
+                    }
                 }
             }
         });
@@ -216,8 +223,10 @@ public class ShilActivity extends AppCompatActivity implements ActionMode.Callba
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     User user = documentSnapshot.toObject(User.class);
-                                    Gold = user.getGOLD() + Double.parseDouble(coin_shil.getValue()) * rate_shil;
-                                    uploadgold();
+                                    if (user != null) {
+                                        Gold = user.getGOLD() + Double.parseDouble(coin_shil.getValue()) * rate_shil;
+                                        uploadgold();
+                                    }
                                 }
                             });
 
@@ -281,6 +290,6 @@ public class ShilActivity extends AppCompatActivity implements ActionMode.Callba
         actionMode = null;
         isMultiSelect = false;
         selectedIds = new ArrayList<>();
-        adapter.setSelectedIds(new ArrayList<Integer>());
+        adapter.setSelectedIds(new ArrayList<>());
     }
 }

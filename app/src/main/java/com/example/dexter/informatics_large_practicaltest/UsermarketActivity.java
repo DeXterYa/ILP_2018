@@ -78,18 +78,23 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
 
         count = 0;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView = findViewById(R.id.recycle_view);
         adapter = new CoinAdapter(this, getList());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setVisibility(View.VISIBLE);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Coins on sale");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Coins on sale");
+        }
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
 
+
         actionMode = startActionMode(UsermarketActivity.this);
-        actionMode.setTitle("Choose coins");
+        if (actionMode != null) {
+            actionMode.setTitle("Choose coins");
+        }
 
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -123,10 +128,12 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot != null) {
                     Rate rate = documentSnapshot.toObject(Rate.class);
-                    rateOfDolr = rate.getDOLR();
-                    rateOfPeny = rate.getPENY();
-                    rateOfQuid = rate.getQUID();
-                    rateOfShil = rate.getSHIL();
+                    if (rate != null) {
+                        rateOfDolr = rate.getDOLR();
+                        rateOfPeny = rate.getPENY();
+                        rateOfQuid = rate.getQUID();
+                        rateOfShil = rate.getSHIL();
+                    }
                 }
             }
         });
@@ -138,7 +145,9 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     User user = documentSnapshot.toObject(User.class);
-                    GoldOfBuyer = user.getGOLD();
+                    if (user != null) {
+                        GoldOfBuyer = user.getGOLD();
+                    }
                 }
             }
         });
@@ -150,7 +159,9 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot != null) {
                     User user1 = documentSnapshot.toObject(User.class);
-                    GoldOfSeller = user1.getGOLD();
+                    if (user1 != null) {
+                        GoldOfSeller = user1.getGOLD();
+                    }
                 }
             }
         });
@@ -176,6 +187,7 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
         }
     }
 
+    // From Firebase get the coins on sale
     private List<Coin> getList(){
 
         List<Coin> list = new ArrayList<>();
@@ -266,27 +278,29 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
                                     valueOfQuidChange = 0.0;
                                     valueOfShilChange = 0.0;
                                     User user = documentSnapshot.toObject(User.class);
-                                    switch (coin_market.getTitle()) {
-                                        case "DOLR":
-                                            valueOfDolr = user.getDOLR();
-                                            valueOfDolr += Double.parseDouble(coin_market.getValue());
-                                            valueOfDolrChange = Double.parseDouble(coin_market.getValue());
-                                            break;
-                                        case "PENY":
-                                            valueOfPeny = user.getPENY();
-                                            valueOfPeny += Double.parseDouble(coin_market.getValue());
-                                            valueOfPenyChange = Double.parseDouble(coin_market.getValue());
-                                            break;
-                                        case "QUID":
-                                            valueOfQuid = user.getQUID();
-                                            valueOfQuid += Double.parseDouble(coin_market.getValue());
-                                            valueOfQuidChange = Double.parseDouble(coin_market.getValue());
-                                            break;
-                                        case "SHIL":
-                                            valueOfShil = user.getSHIL();
-                                            valueOfShil += Double.parseDouble(coin_market.getValue());
-                                            valueOfShilChange = Double.parseDouble(coin_market.getValue());
-                                            break;
+                                    if (user != null) {
+                                        switch (coin_market.getTitle()) {
+                                            case "DOLR":
+                                                valueOfDolr = user.getDOLR();
+                                                valueOfDolr += Double.parseDouble(coin_market.getValue());
+                                                valueOfDolrChange = Double.parseDouble(coin_market.getValue());
+                                                break;
+                                            case "PENY":
+                                                valueOfPeny = user.getPENY();
+                                                valueOfPeny += Double.parseDouble(coin_market.getValue());
+                                                valueOfPenyChange = Double.parseDouble(coin_market.getValue());
+                                                break;
+                                            case "QUID":
+                                                valueOfQuid = user.getQUID();
+                                                valueOfQuid += Double.parseDouble(coin_market.getValue());
+                                                valueOfQuidChange = Double.parseDouble(coin_market.getValue());
+                                                break;
+                                            case "SHIL":
+                                                valueOfShil = user.getSHIL();
+                                                valueOfShil += Double.parseDouble(coin_market.getValue());
+                                                valueOfShilChange = Double.parseDouble(coin_market.getValue());
+                                                break;
+                                        }
                                     }
 
                                     uploadChange();
@@ -349,7 +363,7 @@ public class UsermarketActivity extends AppCompatActivity implements ActionMode.
         actionMode = null;
         isMultiSelect = false;
         selectedIds = new ArrayList<>();
-        adapter.setSelectedIds(new ArrayList<Integer>());
+        adapter.setSelectedIds(new ArrayList<>());
     }
 
 }

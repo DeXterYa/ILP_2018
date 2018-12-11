@@ -26,6 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +42,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Double valueOfShil;
 
 
-    String theLastMessage;
+    private String theLastMessage;
 
     public UserAdapter(Context mContext, List<User> mUsers, boolean ischat, boolean ifShown) {
         this.mUsers = mUsers;
@@ -90,13 +91,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             viewHolder.img_off.setVisibility(View.GONE);
         }
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        viewHolder.itemView.setOnClickListener((View v) ->  {
                 Intent intent = new Intent(mContext, MessageActivity.class);
                 intent.putExtra("userid",user.getId());
                 mContext.startActivity(intent);
-            }
         });
 
         CollectionReference collectionReference = FirebaseFirestore.getInstance()
@@ -139,10 +137,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         viewHolder.penyvalue.setVisibility(View.VISIBLE);
                         viewHolder.quidvalue.setVisibility(View.VISIBLE);
                         viewHolder.shilvalue.setVisibility(View.VISIBLE);
-                        viewHolder.dolrvalue.setText(String.format("%.1f", valueOfDolr));
-                        viewHolder.penyvalue.setText(String.format("%.1f", valueOfPeny));
-                        viewHolder.quidvalue.setText(String.format("%.1f", valueOfQuid));
-                        viewHolder.shilvalue.setText(String.format("%.1f", valueOfShil));
+                        viewHolder.dolrvalue.setText(String.format(Locale.getDefault(), "%.1f", valueOfDolr));
+                        viewHolder.penyvalue.setText(String.format(Locale.getDefault(),"%.1f", valueOfPeny));
+                        viewHolder.quidvalue.setText(String.format(Locale.getDefault(),"%.1f", valueOfQuid));
+                        viewHolder.shilvalue.setText(String.format(Locale.getDefault(),"%.1f", valueOfShil));
 
                     }
                 }
@@ -176,7 +174,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
 
 
-        public ViewHolder(@NonNull View itemView) {
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
 
 
@@ -209,11 +207,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     int i = 0;
                     for(QueryDocumentSnapshot d : queryDocumentSnapshots) {
                         Chat chat = d.toObject(Chat.class);
-                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                                chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                            if (i == 0) {
-                                theLastMessage = chat.getMessage();
-                                i = 1;
+                        if (firebaseUser != null) {
+                            if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                                    chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                                if (i == 0) {
+                                    theLastMessage = chat.getMessage();
+                                    i = 1;
+                                }
                             }
                         }
 
@@ -221,7 +221,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 }
                 switch (theLastMessage) {
                     case "default":
-                        last_msg.setText("No Message");
+                        String s = "No Message";
+                        last_msg.setText(s);
                         break;
 
                     default:

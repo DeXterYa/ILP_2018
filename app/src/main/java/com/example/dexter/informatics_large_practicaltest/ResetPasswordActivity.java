@@ -29,9 +29,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Reset Password");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Reset Password");
+            toolbar.setTitleTextColor(getResources().getColor(R.color.colorPrimary));
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
 
         send_email = findViewById(R.id.send_email);
@@ -39,9 +41,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        btn_reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btn_reset.setOnClickListener((View v) -> {
+
                 String email = send_email.getText().toString();
 
                 if (email.equals("")) {
@@ -55,14 +56,16 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                 startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
 
                             } else {
-                                String error = task.getException().getMessage();
-                                Toast.makeText(ResetPasswordActivity.this, error, Toast.LENGTH_SHORT).show();
+                                if (task.getException() != null) {
+                                    String error = task.getException().getMessage();
+                                    Toast.makeText(ResetPasswordActivity.this, error, Toast.LENGTH_SHORT).show();
+                                }
 
                             }
                         }
                     });
                 }
-            }
+
         });
     }
 }
