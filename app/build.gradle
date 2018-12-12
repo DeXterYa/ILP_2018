@@ -87,5 +87,11 @@ dependencies {
 
     // Mapbox Buildings Plugin for showing and customizing 3D building extrusions
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-building:0.3.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 
 }
